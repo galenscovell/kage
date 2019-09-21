@@ -2,13 +2,19 @@
   "name": "kage",
   "version": "1.0.0",
   "description": "Japanese language learning via the shadowing technique",
-  "main": "index.js",
+  "main": "src/main.ts",
   "scripts": {
-    "start": "electron ."
+    "build": "tsc",
+    "dist": "build",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "npm run build && electron ./app/main.js"
   },
   "author": "galen.scovell@gmail.com",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^6.0.10"
+    "electron": "^6.0.10",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
   }
 }
