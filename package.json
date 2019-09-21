@@ -1,0 +1,14 @@
+{
+  "name": "kage",
+  "version": "1.0.0",
+  "description": "Japanese language learning via the shadowing technique",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "galen.scovell@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^6.0.10"
+  }
+}

@@ -1,0 +1,49 @@
+{
+	"LastStudiedTimestamp": "",
+	"Progress": {
+		"Seen": 0,
+		"Reps": 0,
+		"Days": 0,
+	},
+	"Current": {
+		"TotalSets": 0,
+		"CurrentSet": 0
+	},
+	
+
+}
+
+
+* Locally running, dynamic webapp
+* Pulls from Shadowing, Glossika, and others if present
+	* On new days, pull from available sources in their specific order
+	* User defines how much to pull from each source
+* Flow:
+	* New day -> Study
+	* Play new audio one at a time in random order
+	* User repeats out loud, next plays with small delay
+	* User is able to pause
+	* OPTION: Show text for audio
+		* Pull from CSVs and attach to file
+			* Glossika: already done
+			* Shadowing: will have to create manually
+* Can only study once per day (check against LastStudiedTimestamp)
+
+
+* On pack creation:
+	* Get total files combining all selected sources
+	* Create sets
+		* A lesson is audio file + text
+		* A set is lessons * NewPerDay
+		* Each time a set is played, it's covered 3x (random order each time)
+		* n-4, n-3, n-2, n-1, n
+
+			-  -  -  -  1
+			-  -  -  1  2
+			-  -  1  2  3
+			-  1  2  3  4
+			1  2  3  4  5
+			2  3  4  5  6
+			3  4  5  6  7
+			4  5  6  7  8
+			5  6  7  8  9
