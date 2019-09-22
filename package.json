@@ -15,13 +15,11 @@
   "devDependencies": {
     "electron": "^6.0.10",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.3",
-    "electron-reload": "^1.5.0"
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "electron": "^6.0.10",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.3",
-    "electron-reload": "^1.5.0"
+    "typescript": "^3.6.3"
   }
 }

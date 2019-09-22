@@ -1,7 +1,9 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
-require('electron-reload')(__dirname);
+require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
+});
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -11,8 +13,8 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
         },
-        width: 1024,
-        height: 576,
+        width: 800,
+        height: 400,
         resizable: false,
         center: true,
         frame: false,
