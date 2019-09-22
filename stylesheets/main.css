@@ -1,0 +1,13 @@
+html, body {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: rgb(246, 249, 250);
+}
+
+
+/* ------- Main Container ------- */
+#main {
+    width: 100%;
+    text-align: center;
+}
