@@ -3,22 +3,25 @@ import { ipcRenderer } from "electron";
 const dashboardId: string = 'dashboard';
 const trainingId: string = 'training';
 const aboutId: string = 'about';
-let currentPageId: string = dashboardId;
+const buttonId: string = 'button';
+const mainId: string = 'main';
+
+let currentPageId: string = '';
 
 let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
 
 function changePage(pageId: string) {
     if (currentPageId !== pageId) {
-        let $currentPageElement: JQuery<HTMLElement> = $(`#${currentPageId}-main`);
-        let $currentPageButton: JQuery<HTMLElement> = $(`#${currentPageId}-button`);
+        let $currentPageElement: JQuery<HTMLElement> = $(`#${currentPageId}-${mainId}`);
+        let $currentPageButton: JQuery<HTMLElement> = $(`#${currentPageId}-${buttonId}`);
         $currentPageElement.css('display', 'none');
         $currentPageButton.removeClass('active');
 
         $currentPageElement.appendTo($hiddenElement);
 
-        let $newPageElement: JQuery<HTMLElement> = $(`#${pageId}-main`);
-        let $newPageButton: JQuery<HTMLElement> = $(`#${pageId}-button`);
+        let $newPageElement: JQuery<HTMLElement> = $(`#${pageId}-${mainId}`);
+        let $newPageButton: JQuery<HTMLElement> = $(`#${pageId}-${buttonId}`);
         $newPageElement.css('display', 'inline-block');
         $newPageButton.addClass('active');
 
@@ -28,24 +31,24 @@ function changePage(pageId: string) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    $paneElement = $('#pane-main');
-    $hiddenElement = $('#hidden');
+    $paneElement = $(`#pane-${mainId}`);
+    $hiddenElement = $(`#hidden-${mainId}`);
 
     // Quit function
-    $('#quit-button').on('click', function () {
+    $(`#quit-${buttonId}`).on('click', function () {
         ipcRenderer.send('close-main-window');
     });
 
     // Page changing
-    $(`#${dashboardId}-button`).on('click', function () {
+    $(`#${dashboardId}-${buttonId}`).on('click', function () {
         changePage(dashboardId);
     });
 
-    $(`#${trainingId}-button`).on('click', function () {
+    $(`#${trainingId}-${buttonId}`).on('click', function () {
         changePage(trainingId);
     });
 
-    $(`#${aboutId}-button`).on('click', function () {
+    $(`#${aboutId}-${buttonId}`).on('click', function () {
         changePage(aboutId);
     });
 
@@ -55,4 +58,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // About page functions
 
+    changePage(dashboardId);
 });
