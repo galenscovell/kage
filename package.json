@@ -13,12 +13,16 @@
   "author": "galen.scovell@gmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@types/jquery": "^3.3.31",
     "electron": "^6.0.10",
+    "jquery": "^3.4.1",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   },
   "dependencies": {
+    "@types/jquery": "^3.3.31",
     "electron": "^6.0.10",
+    "jquery": "^3.4.1",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   }
