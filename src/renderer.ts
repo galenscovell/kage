@@ -1,38 +1,54 @@
-import { ipcRenderer } from "electron";
+import { ipcRenderer } from 'electron';
 
 const dashboardId: string = 'dashboard';
 const trainingId: string = 'training';
 const aboutId: string = 'about';
 const buttonId: string = 'button';
-const mainId: string = 'main';
+const containerId: string = 'container';
 
 let currentPageId: string = '';
 
 let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
 
-function changePage(pageId: string) {
+function changePage(pageId: string): void {
     if (currentPageId !== pageId) {
-        let $currentPageElement: JQuery<HTMLElement> = $(`#${currentPageId}-${mainId}`);
-        let $currentPageButton: JQuery<HTMLElement> = $(`#${currentPageId}-${buttonId}`);
-        $currentPageElement.css('display', 'none');
-        $currentPageButton.removeClass('active');
+        let $currentContainer: JQuery<HTMLElement> = $(`#${currentPageId}-${containerId}`);
+        let $currentButton: JQuery<HTMLElement> = $(`#${currentPageId}-${buttonId}`);
+        $currentContainer.css('display', 'none');
+        $currentButton.removeClass('active');
 
-        $currentPageElement.appendTo($hiddenElement);
+        $currentContainer.appendTo($hiddenElement);
 
-        let $newPageElement: JQuery<HTMLElement> = $(`#${pageId}-${mainId}`);
-        let $newPageButton: JQuery<HTMLElement> = $(`#${pageId}-${buttonId}`);
-        $newPageElement.css('display', 'inline-block');
-        $newPageButton.addClass('active');
+        let $newContainer: JQuery<HTMLElement> = $(`#${pageId}-${containerId}`);
+        let $newButton: JQuery<HTMLElement> = $(`#${pageId}-${buttonId}`);
+        $newContainer.css('display', 'inline-block');
+        $newButton.addClass('active');
 
-        $newPageElement.appendTo($paneElement);
+        $newContainer.appendTo($paneElement);
         currentPageId = pageId;
     }
 }
 
+function animateSplash(): void {
+    let $splashContent = $('#splash-content');
+    $splashContent.fadeIn(200, function(): void {
+        $splashContent.fadeOut(100, function(): void {
+            changePage(dashboardId);
+
+            let $splashContainer = $('#splash-container');
+            let primaryContainer = $('#primary-container');
+
+            $splashContainer.appendTo($hiddenElement);
+            primaryContainer.appendTo($('.window-content'));
+            primaryContainer.css('display', 'flex');
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    $paneElement = $(`#pane-${mainId}`);
-    $hiddenElement = $(`#hidden-${mainId}`);
+    $paneElement = $(`#pane-${containerId}`);
+    $hiddenElement = $(`#hidden-${containerId}`);
 
     // Quit function
     $(`#quit-${buttonId}`).on('click', function () {
@@ -58,5 +74,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // About page functions
 
-    changePage(dashboardId);
+    animateSplash();
 });

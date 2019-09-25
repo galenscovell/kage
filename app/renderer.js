@@ -5,28 +5,41 @@ const dashboardId = 'dashboard';
 const trainingId = 'training';
 const aboutId = 'about';
 const buttonId = 'button';
-const mainId = 'main';
+const containerId = 'container';
 let currentPageId = '';
 let $paneElement;
 let $hiddenElement;
 function changePage(pageId) {
     if (currentPageId !== pageId) {
-        let $currentPageElement = $(`#${currentPageId}-${mainId}`);
-        let $currentPageButton = $(`#${currentPageId}-${buttonId}`);
-        $currentPageElement.css('display', 'none');
-        $currentPageButton.removeClass('active');
-        $currentPageElement.appendTo($hiddenElement);
-        let $newPageElement = $(`#${pageId}-${mainId}`);
-        let $newPageButton = $(`#${pageId}-${buttonId}`);
-        $newPageElement.css('display', 'inline-block');
-        $newPageButton.addClass('active');
-        $newPageElement.appendTo($paneElement);
+        let $currentContainer = $(`#${currentPageId}-${containerId}`);
+        let $currentButton = $(`#${currentPageId}-${buttonId}`);
+        $currentContainer.css('display', 'none');
+        $currentButton.removeClass('active');
+        $currentContainer.appendTo($hiddenElement);
+        let $newContainer = $(`#${pageId}-${containerId}`);
+        let $newButton = $(`#${pageId}-${buttonId}`);
+        $newContainer.css('display', 'inline-block');
+        $newButton.addClass('active');
+        $newContainer.appendTo($paneElement);
         currentPageId = pageId;
     }
 }
+function animateSplash() {
+    let $splashContent = $('#splash-content');
+    $splashContent.fadeIn(200, function () {
+        $splashContent.fadeOut(100, function () {
+            changePage(dashboardId);
+            let $splashContainer = $('#splash-container');
+            let primaryContainer = $('#primary-container');
+            $splashContainer.appendTo($hiddenElement);
+            primaryContainer.appendTo($('.window-content'));
+            primaryContainer.css('display', 'flex');
+        });
+    });
+}
 document.addEventListener('DOMContentLoaded', function () {
-    $paneElement = $(`#pane-${mainId}`);
-    $hiddenElement = $(`#hidden-${mainId}`);
+    $paneElement = $(`#pane-${containerId}`);
+    $hiddenElement = $(`#hidden-${containerId}`);
     // Quit function
     $(`#quit-${buttonId}`).on('click', function () {
         electron_1.ipcRenderer.send('close-main-window');
@@ -44,6 +57,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dashboard page functions
     // Training page functions
     // About page functions
-    changePage(dashboardId);
+    animateSplash();
 });
 //# sourceMappingURL=renderer.js.map

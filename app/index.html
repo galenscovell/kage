@@ -13,53 +13,67 @@
             </header>
 
             <div class="window-content">
-                <div class="pane-group">
-                    <div class="pane-sm sidebar">
-                        <ul class="list-group">
-                            <li id="dashboard-button" class="list-group-item active">
-                                <div class="circle media-object pull-left" style="background: rgba(52, 152, 219, 0.75)"></div>
-                                <div class="media-body"><strong>Dashboard</strong>
-                                    <p>Track progress</p>
-                                </div>
-                            </li>
-                            <li id="training-button" class="list-group-item">
-                                <div class="circle media-object pull-left" style="background: rgba(230, 126, 34, 0.75)"></div>
-                                <div class="media-body"><strong>Train</strong>
-                                    <p>Begin session</p>
-                                </div>
-                            </li>
-                            <li id="about-button" class="list-group-item">
-                                <div class="circle media-object pull-left" style="background: rgba(39, 174, 96, 0.75)"></div>
-                                <div class="media-body"><strong>About</strong>
-                                    <p>Information</p>
-                                </div>
-                            </li>
-                            <li id="quit-button" class="list-group-item">
-                                <div class="circle media-object pull-left" style="background: rgba(192, 57, 43, 0.75)"></div>
-                                <div class="media-body"><strong>Quit</strong></div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="pane-main" class="pane"></div>
+                <div id="splash-container">
+                    <div id="splash-content">影</div>
                 </div>
             </div>
         </div>
 
-        <div id="hidden-main">
-            <div id="dashboard-main">
+        <!-- Primary content -->
+        <div id="primary-container" class="pane-group">
+            <div class="pane-sm sidebar">
+                <ul class="list-group">
+                    <li id="dashboard-button" class="list-group-item active">
+                        <div class="rect media-object pull-right"></div>
+                        <div class="media-body">Dashboard
+                            <p class="nav-subtext">ダッシュボード</p>
+                        </div>
+                    </li>
+                    <li id="training-button" class="list-group-item">
+                        <div class="rect media-object pull-right"></div>
+                        <div class="media-body">Train
+                            <p class="nav-subtext">トレーニング</p>
+                        </div>
+                    </li>
+                    <li id="about-button" class="list-group-item">
+                        <div class="rect media-object pull-right"></div>
+                        <div class="media-body">About
+                            <p class="nav-subtext">インフォメーション</p>
+                        </div>
+                    </li>
+                    <li id="quit-button" class="list-group-item">
+                        <div class="rect media-object pull-right"></div>
+                        <div class="media-body">Quit
+                            <p class="nav-subtext">エグジット</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="pane-container" class="pane">
+
+            </div>
+        </div>
+
+        <!-- Hidden section, things will be moved here to disable them -->
+        <div id="hidden-container">
+
+            <!-- Right pane content -->
+            <div id="dashboard-container">
                 <div id="dashboard-top"></div>
                 <div id="dashboard-middle"></div>
                 <div id="dashboard-bottom"></div>
             </div>
 
-            <div id="training-main">
+            <div id="training-container">
                 <div id="training-top"></div>
                 <div id="training-bottom"></div>
             </div>
 
-            <div id="about-main">
+            <div id="about-container">
                 <div id="about-middle"></div>
             </div>
+
         </div>
 
         <script>window.$ = window.jQuery = require('jquery');</script>
