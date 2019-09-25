@@ -26,6 +26,9 @@ electron_1.app.on('ready', () => {
     electron_1.ipcMain.on('close-main-window', function () {
         electron_1.app.quit();
     });
+    electron_1.ipcMain.on('minimize-main-window', function () {
+        mainWindow.minimize();
+    });
     createWindow();
 });
 electron_1.app.on('window-all-closed', () => {

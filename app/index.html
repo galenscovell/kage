@@ -8,10 +8,6 @@
     <body>
         <!-- Wrap your entire app inside .window -->
         <div class="window">
-            <header class="toolbar toolbar-header">
-                <h1 class="title">Kage</h1>
-            </header>
-
             <div class="window-content">
                 <div id="splash-container">
                     <div id="splash-content">影</div>
@@ -19,46 +15,54 @@
             </div>
         </div>
 
+        <!-- Header -->
+        <header id="header" class="toolbar toolbar-header">
+            <h1 class="title">Kage</h1>
+            <div id="header-functions">
+                <div class="btn-group pull-right">
+                    <button id="minimize-button" class="btn">-</button>
+                    <button id="exit-button" class="btn">x</button>
+                </div>
+            </div>
+        </header>
+
         <!-- Primary content -->
         <div id="primary-container" class="pane-group">
+            <div id="pane-container" class="pane"></div>
+
             <div class="pane-sm sidebar">
                 <ul class="list-group">
                     <li id="dashboard-button" class="list-group-item active">
-                        <div class="rect media-object pull-right"></div>
-                        <div class="media-body">Dashboard
+                        <div class="media-body">
+                            <p>Dashboard</p>
                             <p class="nav-subtext">ダッシュボード</p>
                         </div>
                     </li>
                     <li id="training-button" class="list-group-item">
-                        <div class="rect media-object pull-right"></div>
-                        <div class="media-body">Train
+                        <div class="media-body">
+                            <p>Train</p>
                             <p class="nav-subtext">トレーニング</p>
                         </div>
                     </li>
                     <li id="about-button" class="list-group-item">
-                        <div class="rect media-object pull-right"></div>
-                        <div class="media-body">About
+                        <div class="media-body">
+                            <p>About</p>
                             <p class="nav-subtext">インフォメーション</p>
                         </div>
                     </li>
                     <li id="quit-button" class="list-group-item">
-                        <div class="rect media-object pull-right"></div>
-                        <div class="media-body">Quit
+                        <div class="media-body">
+                            <p>Quit</p>
                             <p class="nav-subtext">エグジット</p>
                         </div>
                     </li>
                 </ul>
             </div>
-
-            <div id="pane-container" class="pane">
-
-            </div>
+        </div>
         </div>
 
         <!-- Hidden section, things will be moved here to disable them -->
         <div id="hidden-container">
-
-            <!-- Right pane content -->
             <div id="dashboard-container">
                 <div id="dashboard-top"></div>
                 <div id="dashboard-middle"></div>
@@ -73,7 +77,6 @@
             <div id="about-container">
                 <div id="about-middle"></div>
             </div>
-
         </div>
 
         <script>window.$ = window.jQuery = require('jquery');</script>

@@ -30,10 +30,13 @@ function animateSplash() {
         $splashContent.fadeOut(100, function () {
             changePage(dashboardId);
             let $splashContainer = $('#splash-container');
-            let primaryContainer = $('#primary-container');
+            let $header = $('#header');
+            let $primaryContent = $('#primary-container');
             $splashContainer.appendTo($hiddenElement);
-            primaryContainer.appendTo($('.window-content'));
-            primaryContainer.css('display', 'flex');
+            $header.prependTo($('.window'));
+            $primaryContent.appendTo($('.window-content'));
+            $header.css('display', 'inline-block');
+            $primaryContent.css('display', 'flex');
         });
     });
 }
@@ -53,6 +56,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     $(`#${aboutId}-${buttonId}`).on('click', function () {
         changePage(aboutId);
+    });
+    // Toolbar buttons
+    $(`#minimize-${buttonId}`).on('click', function () {
+        electron_1.ipcRenderer.send('minimize-main-window');
+    });
+    $(`#exit-${buttonId}`).on('click', function () {
+        electron_1.ipcRenderer.send('close-main-window');
     });
     // Dashboard page functions
     // Training page functions
