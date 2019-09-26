@@ -1,4 +1,7 @@
 import { ipcRenderer } from 'electron';
+import {UserData} from "./models/userData";
+import { Storage } from './storage';
+
 
 const dashboardId: string = 'dashboard';
 const trainingId: string = 'training';
@@ -10,6 +13,9 @@ let currentPageId: string = '';
 
 let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
+
+let userData: UserData;
+
 
 function changePage(pageId: string): void {
     if (currentPageId !== pageId) {
@@ -30,23 +36,37 @@ function changePage(pageId: string): void {
     }
 }
 
-function animateSplash(): void {
-    let $splashContent = $('#splash-content');
-    $splashContent.fadeIn(200, function(): void {
-        $splashContent.fadeOut(100, function(): void {
-            changePage(dashboardId);
+function startSplash(): void {
+    $('#splash-content').fadeIn(100, function(): void {
+        loadUserData();
+    });
+}
 
-            let $splashContainer = $('#splash-container');
-            let $header = $('#header');
-            let $primaryContent = $('#primary-container');
+function loadUserData(): void {
+    let username = process.env.username || process.env.user;
+    let storage: Storage = new Storage(username);
 
-            $splashContainer.appendTo($hiddenElement);
-            $header.prependTo($('.window'));
-            $primaryContent.appendTo($('.window-content'));
+    userData = storage.load();
+    if (userData === null) {
+        userData = storage.create(5);
+    }
 
-            $header.css('display', 'inline-block');
-            $primaryContent.css('display', 'flex');
-        });
+    endSplash();
+}
+
+function endSplash(): void {
+    $('#splash-content').fadeOut(100, function(): void {
+        changePage(dashboardId);
+
+        let $header = $('#header');
+        let $primaryContent = $(`#primary-${containerId}`);
+
+        $(`#splash-${containerId}`).appendTo($hiddenElement);
+        $header.prependTo($('.window'));
+        $primaryContent.appendTo($('.window-content'));
+
+        $header.css('display', 'inline-block');
+        $primaryContent.css('display', 'flex');
     });
 }
 
@@ -54,12 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
 
-    // Quit function
-    $(`#quit-${buttonId}`).on('click', function () {
-        ipcRenderer.send('close-main-window');
-    });
-
-    // Page changing
+    // Nav bar buttons
     $(`#${dashboardId}-${buttonId}`).on('click', function () {
         changePage(dashboardId);
     });
@@ -70,6 +85,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $(`#${aboutId}-${buttonId}`).on('click', function () {
         changePage(aboutId);
+    });
+
+    $(`#quit-${buttonId}`).on('click', function () {
+        ipcRenderer.send('close-main-window');
     });
 
     // Toolbar buttons
@@ -87,5 +106,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // About page functions
 
-    animateSplash();
+    startSplash();
 });

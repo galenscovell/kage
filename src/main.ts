@@ -1,7 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 
+
 let mainWindow: Electron.BrowserWindow;
+
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -18,7 +20,7 @@ function createWindow() {
     });
 
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', () => {
         mainWindow = null;

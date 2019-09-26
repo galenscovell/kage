@@ -7,8 +7,8 @@
     --shadow: rgba(52, 73, 94, 0.5);
     --general-theme: #41B3A3;
     --dashboard-theme: #7DC2AD;
-    --training-theme: #C38D9E;
-    --about-theme: #85CDCA;
+    --training-theme: #85CDCA;
+    --about-theme: #C38D9E;
     --quit-theme: #e27d60;
     --highlight: #e8a87c;
 
@@ -239,6 +239,7 @@ body {
     display: none;
     text-align: center;
     background-color: var(--about-theme);
+    color: var(--font-main);
 }
 
 #about-middle {

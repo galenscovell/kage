@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
+const storage_1 = require("./storage");
 const dashboardId = 'dashboard';
 const trainingId = 'training';
 const aboutId = 'about';
@@ -9,6 +10,7 @@ const containerId = 'container';
 let currentPageId = '';
 let $paneElement;
 let $hiddenElement;
+let userData;
 function changePage(pageId) {
     if (currentPageId !== pageId) {
         let $currentContainer = $(`#${currentPageId}-${containerId}`);
@@ -24,30 +26,36 @@ function changePage(pageId) {
         currentPageId = pageId;
     }
 }
-function animateSplash() {
-    let $splashContent = $('#splash-content');
-    $splashContent.fadeIn(200, function () {
-        $splashContent.fadeOut(100, function () {
-            changePage(dashboardId);
-            let $splashContainer = $('#splash-container');
-            let $header = $('#header');
-            let $primaryContent = $('#primary-container');
-            $splashContainer.appendTo($hiddenElement);
-            $header.prependTo($('.window'));
-            $primaryContent.appendTo($('.window-content'));
-            $header.css('display', 'inline-block');
-            $primaryContent.css('display', 'flex');
-        });
+function startSplash() {
+    $('#splash-content').fadeIn(100, function () {
+        loadUserData();
+    });
+}
+function loadUserData() {
+    let username = process.env.username || process.env.user;
+    let storage = new storage_1.Storage(username);
+    userData = storage.load();
+    if (userData === null) {
+        userData = storage.create(5);
+    }
+    endSplash();
+}
+function endSplash() {
+    $('#splash-content').fadeOut(100, function () {
+        changePage(dashboardId);
+        let $header = $('#header');
+        let $primaryContent = $(`#primary-${containerId}`);
+        $(`#splash-${containerId}`).appendTo($hiddenElement);
+        $header.prependTo($('.window'));
+        $primaryContent.appendTo($('.window-content'));
+        $header.css('display', 'inline-block');
+        $primaryContent.css('display', 'flex');
     });
 }
 document.addEventListener('DOMContentLoaded', function () {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
-    // Quit function
-    $(`#quit-${buttonId}`).on('click', function () {
-        electron_1.ipcRenderer.send('close-main-window');
-    });
-    // Page changing
+    // Nav bar buttons
     $(`#${dashboardId}-${buttonId}`).on('click', function () {
         changePage(dashboardId);
     });
@@ -56,6 +64,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     $(`#${aboutId}-${buttonId}`).on('click', function () {
         changePage(aboutId);
+    });
+    $(`#quit-${buttonId}`).on('click', function () {
+        electron_1.ipcRenderer.send('close-main-window');
     });
     // Toolbar buttons
     $(`#minimize-${buttonId}`).on('click', function () {
@@ -67,6 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dashboard page functions
     // Training page functions
     // About page functions
-    animateSplash();
+    startSplash();
 });
 //# sourceMappingURL=renderer.js.map
