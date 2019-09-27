@@ -1,10 +1,11 @@
 :root {
     --dark-bg: #3a5e6c;
-    --light-bg: #fff;
-    --font-main: #fff;
+    --light-bg: #f3f3f3;
+    --font-light: #f3f3f3;
     --font-medium: #e3dac9;
     --font-dark: rgba(44, 62, 80, 1.0);
     --shadow: rgba(52, 73, 94, 0.5);
+
     --general-theme: #41B3A3;
     --dashboard-theme: #7DC2AD;
     --training-theme: #85CDCA;
@@ -113,7 +114,7 @@ body {
     padding: 17px;
     cursor: pointer;
     font-size: 16px;
-    color: var(--font-main);
+    color: var(--font-light);
     width: 160px;
     transition: 0.2s;
     font-family: "Kyokasho", serif;
@@ -122,14 +123,14 @@ body {
 
 .list-group-item:hover {
     background-color: var(--highlight);
-    color: var(--font-main);
+    color: var(--font-light);
     transition: 0.2s;
 }
 
 .list-group-item.active,
 .list-group-item.selected {
     background-color: var(--highlight);
-    color: var(--font-main);
+    color: var(--font-light);
 }
 
 .nav-subtext {
@@ -165,7 +166,7 @@ body {
 #splash-content {
     display: none;
     text-align: center;
-    color: var(--font-main);
+    color: var(--font-light);
     font-size: 224px;
     line-height: 340px;
     font-family: "Ronde", serif;
@@ -239,7 +240,7 @@ body {
     display: none;
     text-align: center;
     background-color: var(--about-theme);
-    color: var(--font-main);
+    color: var(--font-light);
 }
 
 #about-middle {
@@ -320,7 +321,7 @@ body {
     left: 10px;
     top: 1px;
     margin-top: 1px;
-    color: var(--font-main);
+    color: var(--font-light);
 }
 
 .title {

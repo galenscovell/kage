@@ -1,11 +1,12 @@
-import { app, remote } from 'electron';
+import {app, remote} from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import "reflect-metadata";
-import { plainToClass } from "class-transformer";
-import { classToPlain } from "class-transformer";
-import { UserData } from "./models/userData";
+import 'reflect-metadata';
+import {plainToClass} from 'class-transformer';
+import {classToPlain} from 'class-transformer';
+
+import {UserData} from "./models/userData";
 
 
 export class Storage {
@@ -19,10 +20,11 @@ export class Storage {
 
     /**
      * Create and save a new instance of userData.
-     * @param entriesPerPack {number}
+     * @param {number} entriesPerPack
      */
-    public create(entriesPerPack: number): UserData {
+    public async createAsync(entriesPerPack: number): Promise<UserData> {
         let newUserData: UserData = new UserData(entriesPerPack);
+        await newUserData.createEntriesAsync();
         this.save(newUserData);
         return newUserData;
     }
@@ -30,10 +32,11 @@ export class Storage {
     /**
      * Attempt to load in a saved version of userData.
      * If not exists, return null;
+     * @returns {UserData}
      */
     public load(): UserData {
         try {
-            let serialized: object = JSON.parse(fs.readFileSync(this.path).toString());
+            let serialized: object = JSON.parse(fs.readFileSync(this.path, 'utf8'));
             return plainToClass(UserData, serialized);
         } catch (error) {
             return null;
@@ -42,7 +45,7 @@ export class Storage {
 
     /**
      * Save userData, updating all entries.
-     * @param userData {UserData}
+     * @param {UserData} userData
      */
     public save(userData: UserData) {
         let serialized: string = JSON.stringify(classToPlain(userData));

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path = require("path");
@@ -14,16 +23,20 @@ class Storage {
     }
     /**
      * Create and save a new instance of userData.
-     * @param entriesPerPack {number}
+     * @param {number} entriesPerPack
      */
-    create(entriesPerPack) {
-        let newUserData = new userData_1.UserData(entriesPerPack);
-        this.save(newUserData);
-        return newUserData;
+    createAsync(entriesPerPack) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let newUserData = new userData_1.UserData(entriesPerPack);
+            yield newUserData.createEntriesAsync();
+            this.save(newUserData);
+            return newUserData;
+        });
     }
     /**
      * Attempt to load in a saved version of userData.
      * If not exists, return null;
+     * @returns {UserData}
      */
     load() {
         try {
@@ -36,7 +49,7 @@ class Storage {
     }
     /**
      * Save userData, updating all entries.
-     * @param userData {UserData}
+     * @param {UserData} userData
      */
     save(userData) {
         let serialized = JSON.stringify(class_transformer_2.classToPlain(userData));

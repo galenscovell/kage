@@ -4,7 +4,7 @@ export class Entry {
     public text: string;
 
 
-    constructor(audioFilePath: string, text: string) {
+    constructor(audioFilePath: string, text: string = null) {
         this.audioFilePath = audioFilePath;
         this.text = text;
     }

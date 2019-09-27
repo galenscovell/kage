@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const storage_1 = require("./storage");
@@ -26,21 +35,22 @@ function changePage(pageId) {
         currentPageId = pageId;
     }
 }
-function startSplash() {
-    $('#splash-content').fadeIn(100, function () {
-        loadUserData();
+function beginLoadAsync() {
+    return __awaiter(this, void 0, void 0, function* () {
+        $('#splash-content').fadeIn(100, function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                let username = process.env.username || process.env.user;
+                let storage = new storage_1.Storage(username);
+                userData = storage.load();
+                if (userData === null) {
+                    userData = yield storage.createAsync(5);
+                }
+                endLoad();
+            });
+        });
     });
 }
-function loadUserData() {
-    let username = process.env.username || process.env.user;
-    let storage = new storage_1.Storage(username);
-    userData = storage.load();
-    if (userData === null) {
-        userData = storage.create(5);
-    }
-    endSplash();
-}
-function endSplash() {
+function endLoad() {
     $('#splash-content').fadeOut(100, function () {
         changePage(dashboardId);
         let $header = $('#header');
@@ -78,6 +88,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dashboard page functions
     // Training page functions
     // About page functions
-    startSplash();
+    beginLoadAsync();
 });
 //# sourceMappingURL=renderer.js.map

@@ -1,6 +1,6 @@
-import { ipcRenderer } from 'electron';
+import {ipcRenderer} from 'electron';
 import {UserData} from "./models/userData";
-import { Storage } from './storage';
+import {Storage} from './storage';
 
 
 const dashboardId: string = 'dashboard';
@@ -36,25 +36,21 @@ function changePage(pageId: string): void {
     }
 }
 
-function startSplash(): void {
-    $('#splash-content').fadeIn(100, function(): void {
-        loadUserData();
+async function beginLoadAsync(): Promise<void> {
+    $('#splash-content').fadeIn(100, async function(): Promise<void> {
+        let username = process.env.username || process.env.user;
+        let storage: Storage = new Storage(username);
+
+        userData = storage.load();
+        if (userData === null) {
+            userData = await storage.createAsync(5);
+        }
+
+        endLoad();
     });
 }
 
-function loadUserData(): void {
-    let username = process.env.username || process.env.user;
-    let storage: Storage = new Storage(username);
-
-    userData = storage.load();
-    if (userData === null) {
-        userData = storage.create(5);
-    }
-
-    endSplash();
-}
-
-function endSplash(): void {
+function endLoad(): void {
     $('#splash-content').fadeOut(100, function(): void {
         changePage(dashboardId);
 
@@ -106,5 +102,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // About page functions
 
-    startSplash();
+    beginLoadAsync();
 });
