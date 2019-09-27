@@ -1,11 +1,11 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import * as path from 'path';
 
 
 let mainWindow: Electron.BrowserWindow;
 
 
-function createWindow() {
+function createWindow(): void {
     mainWindow = new BrowserWindow({
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),

@@ -13,6 +13,7 @@ const fs_1 = require("fs");
 const path = require("path");
 const csv = require("neat-csv");
 const entry_1 = require("./entry");
+const storage_1 = require("../storage");
 class UserData {
     constructor(entriesPerPack) {
         this.repsPerEntry = 4;
@@ -31,16 +32,16 @@ class UserData {
      *  Each CSV row should be two columns: the name of the file (without extension), and the text to display for that entry.
      *  The CSV is not required for ach sub-directory. If not found it will be ignored silently.
      *
-     * @returns {Entry[]} array of entry objects
+     * @returns {Entry[]} Array of entry objects.
      */
     createEntriesAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            let subDirs = UserData.getDirectories();
+            let subDirs = storage_1.Storage.getDirectories();
             let entryMap = new Map();
-            let textMaps = yield UserData.createTextMaps(subDirs);
+            let textMaps = yield UserData.createTextMapsAsync(subDirs);
             subDirs.forEach(function (subDir) {
                 let subDirEntries = [];
-                let audioFiles = UserData.getFilesWithExt(subDir, 'mp3');
+                let audioFiles = storage_1.Storage.getFilesWithExt(subDir, 'mp3');
                 let textMap = textMaps.get(subDir);
                 audioFiles.forEach(function (fileName) {
                     let text = null;
@@ -55,7 +56,7 @@ class UserData {
             this.entries = entryMap;
         });
     }
-    static createTextMaps(subDirs) {
+    static createTextMapsAsync(subDirs) {
         return __awaiter(this, void 0, void 0, function* () {
             let resultMap = new Map();
             const tasks = [];
@@ -69,10 +70,16 @@ class UserData {
             return resultMap;
         });
     }
+    /**
+     * Parse an individual source's CSV, mapping text to audio filename.
+     *
+     * @param {string} subDir: The sub-directory name for this source.
+     * @returns {[string, Map<string, string>]} Tuple of [subDir name, { audioFileName: text}].
+     */
     static parseCSVAsync(subDir) {
         return __awaiter(this, void 0, void 0, function* () {
             let textMap = new Map();
-            let csvFiles = UserData.getFilesWithExt(subDir, 'csv');
+            let csvFiles = storage_1.Storage.getFilesWithExt(subDir, 'csv');
             if (csvFiles !== null && csvFiles.length > 0) {
                 let csvPath = path.join(__dirname, '..', 'data', subDir, csvFiles[0]);
                 let csvInput = yield fs_1.readFileSync(csvPath, 'utf8');
@@ -103,7 +110,7 @@ class UserData {
          1  2  3  4  5
          2  3  4  5  6
      *
-     * @returns {Pack[]} array of Pack objects
+     * @returns {Pack[]} Array of Pack objects.
      */
     createPacks() {
         let sources = this.entries.keys();
@@ -112,7 +119,8 @@ class UserData {
     /**
      * Find and return the next Pack to be presented to the user.
      * If none exists, return null.
-     * @returns {Pack} pack object
+     *
+     * @returns {Pack} Pack object.
      */
     getNextPack() {
         if (this.currentPackIndex < this.packs.length) {
@@ -130,29 +138,6 @@ class UserData {
         this.currentReps += lastPack.entries.length * this.repsPerEntry;
         this.currentPackIndex++;
         this.lastStudiedDate = new Date();
-    }
-    /**
-     * Get list of sub-directory names within data folder.
-     * @returns {string[]} array of directory names
-     */
-    static getDirectories() {
-        let dirPath = path.join(__dirname, '..', 'data');
-        let dirs = fs_1.readdirSync(dirPath, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory());
-        return dirs.map(dirent => dirent.name);
-    }
-    /**
-     * Get list of filenames with specific extension within specific sub-directory.
-     * @param subDir
-     * @param extension
-     * @returns {string[]} array of filenames
-     */
-    static getFilesWithExt(subDir, extension) {
-        let dirPath = path.join(__dirname, '..', 'data', subDir);
-        let files = fs_1.readdirSync(dirPath, { withFileTypes: true })
-            .filter(dirent => dirent.isFile())
-            .map(dirent => dirent.name);
-        return files.filter(name => name.endsWith(extension));
     }
 }
 exports.UserData = UserData;

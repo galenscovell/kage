@@ -23,7 +23,9 @@ class Storage {
     }
     /**
      * Create and save a new instance of userData.
-     * @param {number} entriesPerPack
+     *
+     * @param {number} entriesPerPack: Number of entries per training pack.
+     * @returns {UserData}
      */
     createAsync(entriesPerPack) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,13 +36,13 @@ class Storage {
         });
     }
     /**
-     * Attempt to load in a saved version of userData.
-     * If not exists, return null;
-     * @returns {UserData}
+     * Attempt to load in a saved version of userData. If not exists, return null;
+     *
+     * @returns {UserData} The loaded data, or null.
      */
     load() {
         try {
-            let serialized = JSON.parse(fs.readFileSync(this.path).toString());
+            let serialized = JSON.parse(fs.readFileSync(this.path, 'utf8'));
             return class_transformer_1.plainToClass(userData_1.UserData, serialized);
         }
         catch (error) {
@@ -49,11 +51,37 @@ class Storage {
     }
     /**
      * Save userData, updating all entries.
-     * @param {UserData} userData
+     *
+     * @param {UserData} userData: The data to be saved to disk.
      */
     save(userData) {
         let serialized = JSON.stringify(class_transformer_2.classToPlain(userData));
         fs.writeFileSync(this.path, serialized);
+    }
+    /**
+     * Get list of sub-directory names within data folder.
+     *
+     * @returns {string[]} Array of directory names.
+     */
+    static getDirectories() {
+        let dirPath = path.join(__dirname, 'data');
+        let dirs = fs.readdirSync(dirPath, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory());
+        return dirs.map(dirent => dirent.name);
+    }
+    /**
+     * Get list of filenames with specific extension within specific sub-directory.
+     *
+     * @param {string} subDir: The sub-directory name for this source.
+     * @param {string} ext: The file extension, not including period.
+     * @returns {string[]} Array of filenames.
+     */
+    static getFilesWithExt(subDir, ext) {
+        let dirPath = path.join(__dirname, 'data', subDir);
+        let files = fs.readdirSync(dirPath, { withFileTypes: true })
+            .filter(dirent => dirent.isFile())
+            .map(dirent => dirent.name);
+        return files.filter(name => name.endsWith(ext));
     }
 }
 exports.Storage = Storage;
