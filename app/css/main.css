@@ -205,6 +205,25 @@ body {
     height: 20%;
 }
 
+#dashboard-regenerate-button {
+    position: absolute;
+    bottom: 0;
+    padding: 14px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--font-light);
+    width: 120px;
+    transition: 0.2s;
+    font-family: "Kyokasho", serif;
+    text-shadow: 2px 2px 2px var(--shadow);
+}
+
+#dashboard-regenerate-button:hover {
+    background-color: var(--quit-theme);
+    color: var(--font-dark);
+    transition: 0.2s;
+}
+
 /* Training */
 #training-button:hover,
 #training-button.active{
@@ -276,20 +295,6 @@ body {
 .pane-sm {
     max-width: 220px;
     min-width: 150px;
-}
-
-.pane-mini {
-    width: 80px;
-    flex: none;
-}
-
-.pane-one-fourth {
-    width: 25%;
-    flex: none;
-}
-
-.pane-one-third {
-    width: 33.3%;
 }
 
 /* Toolbars */

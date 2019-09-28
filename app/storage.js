@@ -23,13 +23,16 @@ class Storage {
         this.path = path.join(userDataPath, `${configName}.json`);
     }
     /**
-     * Create and save a new instance of userData.
+     * Create and save a new instance of userData. First deletes the current UserData.
      *
      * @param {number} entriesPerPack: Number of entries per training pack.
      * @returns {UserData} The newly created UserData object.
      */
     createAsync(entriesPerPack) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (fs.existsSync(this.path)) {
+                fs.unlinkSync(this.path);
+            }
             let newUserData = new userData_1.UserData(entriesPerPack);
             yield newUserData.createAsync();
             this.save(newUserData);

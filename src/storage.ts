@@ -21,12 +21,16 @@ export class Storage {
     }
 
     /**
-     * Create and save a new instance of userData.
+     * Create and save a new instance of userData. First deletes the current UserData.
      *
      * @param {number} entriesPerPack: Number of entries per training pack.
      * @returns {UserData} The newly created UserData object.
      */
     public async createAsync(entriesPerPack: number): Promise<UserData> {
+        if (fs.existsSync(this.path)) {
+            fs.unlinkSync(this.path);
+        }
+
         let newUserData: UserData = new UserData(entriesPerPack);
         await newUserData.createAsync();
         this.save(newUserData);

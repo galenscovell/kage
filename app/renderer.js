@@ -19,6 +19,7 @@ const containerId = 'container';
 let currentPageId = '';
 let $paneElement;
 let $hiddenElement;
+let storage = new storage_1.Storage(process.env.username || process.env.user);
 let userData;
 function changePage(pageId) {
     if (currentPageId !== pageId) {
@@ -35,18 +36,11 @@ function changePage(pageId) {
         currentPageId = pageId;
     }
 }
-function beginLoadAsync() {
-    return __awaiter(this, void 0, void 0, function* () {
-        $('#splash-content').fadeIn(100, function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                let username = process.env.username || process.env.user;
-                let storage = new storage_1.Storage(username);
-                userData = storage.load();
-                if (userData === null) {
-                    userData = yield storage.createAsync(5);
-                }
-                endLoad();
-            });
+function beginLoad() {
+    $('#splash-content').fadeIn(100, function () {
+        return __awaiter(this, void 0, void 0, function* () {
+            userData = storage.load();
+            endLoad();
         });
     });
 }
@@ -60,6 +54,11 @@ function endLoad() {
         $primaryContent.appendTo($('.window-content'));
         $header.css('display', 'inline-block');
         $primaryContent.css('display', 'flex');
+    });
+}
+function createData(entriesPerPack) {
+    return __awaiter(this, void 0, void 0, function* () {
+        userData = yield storage.createAsync(entriesPerPack);
     });
 }
 document.addEventListener('DOMContentLoaded', function () {
@@ -86,8 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
         electron_1.ipcRenderer.send('close-main-window');
     });
     // Dashboard page functions
+    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', function () {
+        createData(5);
+    });
     // Training page functions
     // About page functions
-    beginLoadAsync();
+    beginLoad();
 });
 //# sourceMappingURL=renderer.js.map

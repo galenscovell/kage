@@ -101,7 +101,7 @@ class UserData {
         this.totalPacks += 8;
         // Add entries to packs round robin across sources
         let usedSourceIdx = 0;
-        let lastFourEntries = [];
+        let previousEntries = [];
         for (let n = 0; n < this.totalPacks; n++) {
             // Which source to use, and which entry index we are currently on within that source
             if (usedSourceIdx >= sources.length) {
@@ -111,12 +111,12 @@ class UserData {
             let usedSourceEntryIdx = sourceIndexTracker.get(usedSourceKey);
             // Pack is entries n-4, n-3, n-2, n-1, n
             let currentEntry = entryMap.get(usedSourceKey)[usedSourceEntryIdx];
-            let entriesForPack = [currentEntry].concat(lastFourEntries);
+            let entriesForPack = [currentEntry].concat(previousEntries);
             this.packs.push(new pack_1.Pack(entriesForPack));
             // Update last four entries
-            lastFourEntries.push(currentEntry);
-            if (lastFourEntries.length > 4) {
-                lastFourEntries.splice(0, 1);
+            previousEntries.push(currentEntry);
+            if (previousEntries.length > this.entriesPerPack) {
+                previousEntries.splice(0, 1);
             }
             // Increment source and source entry index trackers
             sourceIndexTracker.set(usedSourceKey, usedSourceEntryIdx + 1);

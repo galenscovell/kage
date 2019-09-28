@@ -14,6 +14,7 @@ let currentPageId: string = '';
 let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
 
+let storage: Storage = new Storage(process.env.username || process.env.user);
 let userData: UserData;
 
 
@@ -36,16 +37,9 @@ function changePage(pageId: string): void {
     }
 }
 
-async function beginLoadAsync(): Promise<void> {
+function beginLoad(): void {
     $('#splash-content').fadeIn(100, async function(): Promise<void> {
-        let username = process.env.username || process.env.user;
-        let storage: Storage = new Storage(username);
-
         userData = storage.load();
-        if (userData === null) {
-            userData = await storage.createAsync(5);
-        }
-
         endLoad();
     });
 }
@@ -66,41 +60,48 @@ function endLoad(): void {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+async function createData(entriesPerPack: number): Promise<void> {
+    userData = await storage.createAsync(entriesPerPack);
+}
+
+document.addEventListener('DOMContentLoaded', function(): void {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
 
     // Nav bar buttons
-    $(`#${dashboardId}-${buttonId}`).on('click', function () {
+    $(`#${dashboardId}-${buttonId}`).on('click', function(): void {
         changePage(dashboardId);
     });
 
-    $(`#${trainingId}-${buttonId}`).on('click', function () {
+    $(`#${trainingId}-${buttonId}`).on('click', function(): void {
         changePage(trainingId);
     });
 
-    $(`#${aboutId}-${buttonId}`).on('click', function () {
+    $(`#${aboutId}-${buttonId}`).on('click', function(): void {
         changePage(aboutId);
     });
 
-    $(`#quit-${buttonId}`).on('click', function () {
+    $(`#quit-${buttonId}`).on('click', function(): void {
         ipcRenderer.send('close-main-window');
     });
 
     // Toolbar buttons
-    $(`#minimize-${buttonId}`).on('click', function () {
+    $(`#minimize-${buttonId}`).on('click', function(): void {
         ipcRenderer.send('minimize-main-window');
     });
 
-    $(`#exit-${buttonId}`).on('click', function () {
+    $(`#exit-${buttonId}`).on('click', function(): void {
         ipcRenderer.send('close-main-window');
     });
 
     // Dashboard page functions
+    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', function(): void {
+        createData(5);
+    });
 
     // Training page functions
 
     // About page functions
 
-    beginLoadAsync();
+    beginLoad();
 });
