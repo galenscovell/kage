@@ -15,6 +15,7 @@ const fs = require("fs");
 require("reflect-metadata");
 const class_transformer_1 = require("class-transformer");
 const class_transformer_2 = require("class-transformer");
+const csv = require("neat-csv");
 const userData_1 = require("./models/userData");
 class Storage {
     constructor(configName) {
@@ -25,12 +26,12 @@ class Storage {
      * Create and save a new instance of userData.
      *
      * @param {number} entriesPerPack: Number of entries per training pack.
-     * @returns {UserData}
+     * @returns {UserData} The newly created UserData object.
      */
     createAsync(entriesPerPack) {
         return __awaiter(this, void 0, void 0, function* () {
             let newUserData = new userData_1.UserData(entriesPerPack);
-            yield newUserData.createEntriesAsync();
+            yield newUserData.createAsync();
             this.save(newUserData);
             return newUserData;
         });
@@ -82,6 +83,29 @@ class Storage {
             .filter(dirent => dirent.isFile())
             .map(dirent => dirent.name);
         return files.filter(name => name.endsWith(ext));
+    }
+    /**
+     * Parse an individual source's CSV, mapping text to audio filename.
+     *
+     * @param {string} subDir: The sub-directory name for this source.
+     * @returns {[string, Map<string, string>]} Tuple of [subDir name, { audioFileName: text}].
+     */
+    static parseCSVAsync(subDir) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let textMap = new Map();
+            let csvFiles = Storage.getFilesWithExt(subDir, 'csv');
+            if (csvFiles !== null && csvFiles.length > 0) {
+                let csvPath = path.join(__dirname, 'data', subDir, csvFiles[0]);
+                let csvInput = yield fs.readFileSync(csvPath, 'utf8');
+                let csvData = yield csv(csvInput, {
+                    headers: ['index', 'sentence'], separator: ',', skipLines: 1
+                });
+                csvData.forEach(function (row) {
+                    textMap.set(`${row['index']}.mp3`, row['sentence']);
+                });
+            }
+            return [subDir, textMap];
+        });
     }
 }
 exports.Storage = Storage;

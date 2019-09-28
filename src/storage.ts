@@ -5,6 +5,8 @@ import * as fs from 'fs';
 import 'reflect-metadata';
 import {plainToClass} from 'class-transformer';
 import {classToPlain} from 'class-transformer';
+import {Row} from 'neat-csv';
+import csv = require('neat-csv');
 
 import {UserData} from './models/userData';
 
@@ -22,11 +24,11 @@ export class Storage {
      * Create and save a new instance of userData.
      *
      * @param {number} entriesPerPack: Number of entries per training pack.
-     * @returns {UserData}
+     * @returns {UserData} The newly created UserData object.
      */
     public async createAsync(entriesPerPack: number): Promise<UserData> {
         let newUserData: UserData = new UserData(entriesPerPack);
-        await newUserData.createEntriesAsync();
+        await newUserData.createAsync();
         this.save(newUserData);
 
         return newUserData;
@@ -84,5 +86,29 @@ export class Storage {
             .map(dirent => dirent.name);
 
         return files.filter(name => name.endsWith(ext));
+    }
+
+    /**
+     * Parse an individual source's CSV, mapping text to audio filename.
+     *
+     * @param {string} subDir: The sub-directory name for this source.
+     * @returns {[string, Map<string, string>]} Tuple of [subDir name, { audioFileName: text}].
+     */
+    public static async parseCSVAsync(subDir: string): Promise<[string, Map<string, string>]> {
+        let textMap: Map<string, string> = new Map<string, string>();
+
+        let csvFiles: string[] = Storage.getFilesWithExt(subDir, 'csv');
+        if (csvFiles !== null && csvFiles.length > 0) {
+            let csvPath: string = path.join(__dirname, 'data', subDir, csvFiles[0]);
+            let csvInput: string = await fs.readFileSync(csvPath, 'utf8');
+            let csvData: Row[] = await csv(csvInput,{
+                headers: ['index', 'sentence'], separator: ',', skipLines: 1});
+
+            csvData.forEach(function(row: Row) {
+                textMap.set(`${row['index']}.mp3`, row['sentence']);
+            });
+        }
+
+        return [subDir, textMap];
     }
 }

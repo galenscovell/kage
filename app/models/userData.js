@@ -9,16 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = require("fs");
 const path = require("path");
-const csv = require("neat-csv");
 const entry_1 = require("./entry");
+const pack_1 = require("./pack");
 const storage_1 = require("../storage");
 class UserData {
     constructor(entriesPerPack) {
         this.repsPerEntry = 4;
         this.beganDate = new Date();
         this.entriesPerPack = entriesPerPack;
+        this.totalPacks = 0;
+        this.packs = [];
     }
     /**
      * Iterate across all files in data directory, creating individual entries.
@@ -34,7 +35,7 @@ class UserData {
      *
      * @returns {Entry[]} Array of entry objects.
      */
-    createEntriesAsync() {
+    createAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             let subDirs = storage_1.Storage.getDirectories();
             let entryMap = new Map();
@@ -53,7 +54,7 @@ class UserData {
                 });
                 entryMap.set(subDir, subDirEntries);
             });
-            this.entries = entryMap;
+            this.createPacks(entryMap);
         });
     }
     static createTextMapsAsync(subDirs) {
@@ -61,36 +62,13 @@ class UserData {
             let resultMap = new Map();
             const tasks = [];
             subDirs.forEach(function (subDir) {
-                tasks.push(UserData.parseCSVAsync(subDir));
+                tasks.push(storage_1.Storage.parseCSVAsync(subDir));
             });
             let csvResults = yield Promise.all(tasks);
             csvResults.forEach(function (result) {
                 resultMap.set(result[0], result[1]);
             });
             return resultMap;
-        });
-    }
-    /**
-     * Parse an individual source's CSV, mapping text to audio filename.
-     *
-     * @param {string} subDir: The sub-directory name for this source.
-     * @returns {[string, Map<string, string>]} Tuple of [subDir name, { audioFileName: text}].
-     */
-    static parseCSVAsync(subDir) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let textMap = new Map();
-            let csvFiles = storage_1.Storage.getFilesWithExt(subDir, 'csv');
-            if (csvFiles !== null && csvFiles.length > 0) {
-                let csvPath = path.join(__dirname, '..', 'data', subDir, csvFiles[0]);
-                let csvInput = yield fs_1.readFileSync(csvPath, 'utf8');
-                let csvData = yield csv(csvInput, {
-                    headers: ['index', 'sentence'], separator: ',', skipLines: 1
-                });
-                csvData.forEach(function (row) {
-                    textMap.set(`${row['index']}.mp3`, row['sentence']);
-                });
-            }
-            return [subDir, textMap];
         });
     }
     /**
@@ -110,11 +88,40 @@ class UserData {
          1  2  3  4  5
          2  3  4  5  6
      *
-     * @returns {Pack[]} Array of Pack objects.
+     * @param {Map<string, Entry[]>} entryMap: Map of source name to its Array of Entry objects.
      */
-    createPacks() {
-        let sources = this.entries.keys();
-        return null;
+    createPacks(entryMap) {
+        let sources = Array.from(entryMap.keys());
+        let sourceIndexTracker = new Map();
+        for (let source of sources) {
+            this.totalPacks += entryMap.get(source).length / this.entriesPerPack;
+            sourceIndexTracker.set(source, 0);
+        }
+        // Add 4 to beginning and end to account for fade in and out of entries in sets (see example in doc)
+        this.totalPacks += 8;
+        // Add entries to packs round robin across sources
+        let usedSourceIdx = 0;
+        let lastFourEntries = [];
+        for (let n = 0; n < this.totalPacks; n++) {
+            // Which source to use, and which entry index we are currently on within that source
+            if (usedSourceIdx >= sources.length) {
+                usedSourceIdx = 0;
+            }
+            let usedSourceKey = sources[usedSourceIdx];
+            let usedSourceEntryIdx = sourceIndexTracker.get(usedSourceKey);
+            // Pack is entries n-4, n-3, n-2, n-1, n
+            let currentEntry = entryMap.get(usedSourceKey)[usedSourceEntryIdx];
+            let entriesForPack = [currentEntry].concat(lastFourEntries);
+            this.packs.push(new pack_1.Pack(entriesForPack));
+            // Update last four entries
+            lastFourEntries.push(currentEntry);
+            if (lastFourEntries.length > 4) {
+                lastFourEntries.splice(0, 1);
+            }
+            // Increment source and source entry index trackers
+            sourceIndexTracker.set(usedSourceKey, usedSourceEntryIdx + 1);
+            usedSourceIdx++;
+        }
     }
     /**
      * Find and return the next Pack to be presented to the user.
