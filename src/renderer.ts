@@ -95,6 +95,16 @@ document.addEventListener('DOMContentLoaded', function(): void {
     });
 
     // Dashboard page functions
+    $(`#${dashboardId}-regenerate-switch-input`).on('click', function(): void {
+        let $regenButton: JQuery<HTMLElement> = $(`#${dashboardId}-regenerate-${buttonId}`);
+
+        if ($regenButton.hasClass('disabled')) {
+            $regenButton.removeClass('disabled');
+        } else {
+            $regenButton.addClass('disabled');
+        }
+    });
+
     $(`#${dashboardId}-regenerate-${buttonId}`).on('click', function(): void {
         createData(5);
     });

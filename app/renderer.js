@@ -85,6 +85,15 @@ document.addEventListener('DOMContentLoaded', function () {
         electron_1.ipcRenderer.send('close-main-window');
     });
     // Dashboard page functions
+    $(`#${dashboardId}-regenerate-switch-input`).on('click', function () {
+        let $regenButton = $(`#${dashboardId}-regenerate-${buttonId}`);
+        if ($regenButton.hasClass('disabled')) {
+            $regenButton.removeClass('disabled');
+        }
+        else {
+            $regenButton.addClass('disabled');
+        }
+    });
     $(`#${dashboardId}-regenerate-${buttonId}`).on('click', function () {
         createData(5);
     });
