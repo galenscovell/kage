@@ -8,7 +8,6 @@ let mainWindow: Electron.BrowserWindow;
 function createWindow(): void {
     mainWindow = new BrowserWindow({
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true
         },
         width: 800,
