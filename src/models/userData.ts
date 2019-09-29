@@ -107,17 +107,13 @@ export class UserData {
 
         let sourceIndexTracker: Map<string, number> = new Map<string, number>();
         for (let source of sources) {
-            this.totalPacks += entryMap.get(source).length / this.entriesPerPack;
             sourceIndexTracker.set(source, 0);
         }
-
-        // Add 4 to beginning and end to account for fade in and out of entries in sets (see example in doc)
-        this.totalPacks += 8;
 
         // Add entries to packs round robin across sources
         let usedSourceIdx: number = 0;
         let previousEntries: Entry[] = [];
-        for (let n = 0; n < this.totalPacks; n++) {
+        while (sources.length > 0) {
             // Which source to use, and which entry index we are currently on within that source
             if (usedSourceIdx >= sources.length) {
                 usedSourceIdx = 0;
@@ -125,6 +121,11 @@ export class UserData {
 
             let usedSourceKey: string = sources[usedSourceIdx];
             let usedSourceEntryIdx: number = sourceIndexTracker.get(usedSourceKey);
+            // If source has run out of available entries, remove it from sources for round robin
+            if (usedSourceEntryIdx >= entryMap.get(usedSourceKey).length) {
+                sources.splice(usedSourceIdx, 1);
+                continue;
+            }
 
             // Pack is entries n-4, n-3, n-2, n-1, n
             let currentEntry: Entry = entryMap.get(usedSourceKey)[usedSourceEntryIdx];
@@ -132,16 +133,25 @@ export class UserData {
 
             this.packs.push(new Pack(entriesForPack));
 
-            // Update last four entries
-            previousEntries.push(currentEntry);
-            if (previousEntries.length > this.entriesPerPack) {
-                previousEntries.splice(0, 1);
+            // Update last ("entriesPerPack" - 1) entries, removing last (oldest) entry if over ("entriesPerPack" - 1)
+            previousEntries.unshift(currentEntry);
+            if (previousEntries.length > this.entriesPerPack - 1) {
+                previousEntries.pop();
             }
 
             // Increment source and source entry index trackers
             sourceIndexTracker.set(usedSourceKey, usedSourceEntryIdx + 1);
             usedSourceIdx++;
         }
+
+        // Fade out the remaining entries, adding no new ones
+        while (previousEntries.length > 1) {
+            previousEntries.pop();
+            let remainingEntries: Entry[] = [].concat(previousEntries);
+            this.packs.push(new Pack(remainingEntries));
+        }
+
+        this.totalPacks = this.packs.length;
     }
 
     /**
