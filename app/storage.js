@@ -103,7 +103,7 @@ class Storage {
                 let csvData = yield csv(csvInput, {
                     headers: ['index', 'sentence'], separator: ',', skipLines: 1
                 });
-                csvData.forEach(function (row) {
+                csvData.forEach((row) => {
                     textMap.set(`${row['index']}.mp3`, row['sentence']);
                 });
             }

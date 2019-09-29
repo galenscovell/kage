@@ -38,14 +38,14 @@ function changePage(pageId: string): void {
 }
 
 function beginLoad(): void {
-    $('#splash-content').fadeIn(100, async function(): Promise<void> {
+    $('#splash-content').fadeIn(100, async (): Promise<void> => {
         userData = storage.load();
         endLoad();
     });
 }
 
 function endLoad(): void {
-    $('#splash-content').fadeOut(100, function(): void {
+    $('#splash-content').fadeOut(100, () => {
         changePage(dashboardId);
 
         let $header = $('#header');
@@ -64,38 +64,38 @@ async function createData(entriesPerPack: number): Promise<void> {
     userData = await storage.createAsync(entriesPerPack);
 }
 
-document.addEventListener('DOMContentLoaded', function(): void {
+document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
 
     // Nav bar buttons
-    $(`#${dashboardId}-${buttonId}`).on('click', function(): void {
+    $(`#${dashboardId}-${buttonId}`).on('click', () => {
         changePage(dashboardId);
     });
 
-    $(`#${trainingId}-${buttonId}`).on('click', function(): void {
+    $(`#${trainingId}-${buttonId}`).on('click', () => {
         changePage(trainingId);
     });
 
-    $(`#${aboutId}-${buttonId}`).on('click', function(): void {
+    $(`#${aboutId}-${buttonId}`).on('click', () => {
         changePage(aboutId);
     });
 
-    $(`#quit-${buttonId}`).on('click', function(): void {
+    $(`#quit-${buttonId}`).on('click', () => {
         ipcRenderer.send('close-main-window');
     });
 
     // Toolbar buttons
-    $(`#minimize-${buttonId}`).on('click', function(): void {
+    $(`#minimize-${buttonId}`).on('click', () => {
         ipcRenderer.send('minimize-main-window');
     });
 
-    $(`#exit-${buttonId}`).on('click', function(): void {
+    $(`#exit-${buttonId}`).on('click', () => {
         ipcRenderer.send('close-main-window');
     });
 
     // Dashboard page functions
-    $(`#${dashboardId}-regenerate-switch-input`).on('click', function(): void {
+    $(`#${dashboardId}-regenerate-switch-input`).on('click', () => {
         let $regenButton: JQuery<HTMLElement> = $(`#${dashboardId}-regenerate-${buttonId}`);
 
         if ($regenButton.hasClass('disabled')) {
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function(): void {
         }
     });
 
-    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', function(): void {
+    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', () => {
         createData(5);
     });
 

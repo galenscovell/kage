@@ -37,15 +37,13 @@ function changePage(pageId) {
     }
 }
 function beginLoad() {
-    $('#splash-content').fadeIn(100, function () {
-        return __awaiter(this, void 0, void 0, function* () {
-            userData = storage.load();
-            endLoad();
-        });
-    });
+    $('#splash-content').fadeIn(100, () => __awaiter(this, void 0, void 0, function* () {
+        userData = storage.load();
+        endLoad();
+    }));
 }
 function endLoad() {
-    $('#splash-content').fadeOut(100, function () {
+    $('#splash-content').fadeOut(100, () => {
         changePage(dashboardId);
         let $header = $('#header');
         let $primaryContent = $(`#primary-${containerId}`);
@@ -61,31 +59,31 @@ function createData(entriesPerPack) {
         userData = yield storage.createAsync(entriesPerPack);
     });
 }
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
     // Nav bar buttons
-    $(`#${dashboardId}-${buttonId}`).on('click', function () {
+    $(`#${dashboardId}-${buttonId}`).on('click', () => {
         changePage(dashboardId);
     });
-    $(`#${trainingId}-${buttonId}`).on('click', function () {
+    $(`#${trainingId}-${buttonId}`).on('click', () => {
         changePage(trainingId);
     });
-    $(`#${aboutId}-${buttonId}`).on('click', function () {
+    $(`#${aboutId}-${buttonId}`).on('click', () => {
         changePage(aboutId);
     });
-    $(`#quit-${buttonId}`).on('click', function () {
+    $(`#quit-${buttonId}`).on('click', () => {
         electron_1.ipcRenderer.send('close-main-window');
     });
     // Toolbar buttons
-    $(`#minimize-${buttonId}`).on('click', function () {
+    $(`#minimize-${buttonId}`).on('click', () => {
         electron_1.ipcRenderer.send('minimize-main-window');
     });
-    $(`#exit-${buttonId}`).on('click', function () {
+    $(`#exit-${buttonId}`).on('click', () => {
         electron_1.ipcRenderer.send('close-main-window');
     });
     // Dashboard page functions
-    $(`#${dashboardId}-regenerate-switch-input`).on('click', function () {
+    $(`#${dashboardId}-regenerate-switch-input`).on('click', () => {
         let $regenButton = $(`#${dashboardId}-regenerate-${buttonId}`);
         if ($regenButton.hasClass('disabled')) {
             $regenButton.removeClass('disabled');
@@ -94,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
             $regenButton.addClass('disabled');
         }
     });
-    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', function () {
+    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', () => {
         createData(5);
     });
     // Training page functions

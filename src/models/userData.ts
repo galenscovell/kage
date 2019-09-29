@@ -47,19 +47,18 @@ export class UserData {
         let textMaps: Map<string, Map<string, string>> = await UserData.createTextMapsAsync(subDirs);
 
         let entryCount: number = 0;
-        subDirs.forEach(function (subDir: string): void {
+        subDirs.forEach((subDir: string) => {
             let subDirEntries: Entry[] = [];
             let audioFiles: string[] = Storage.getFilesWithExt(subDir, 'mp3');
             let textMap: Map<string, string> = textMaps.get(subDir);
 
-            audioFiles.forEach(function (fileName: string) {
+            audioFiles.forEach((fileName: string) => {
                 let text: string = null;
                 if (textMap.has(fileName)) {
                     text = textMap.get(fileName);
                 }
 
                 let newEntry: Entry = new Entry(path.join(__dirname, '..', 'data', subDir, fileName), text);
-
                 subDirEntries.push(newEntry);
             });
 
@@ -76,12 +75,12 @@ export class UserData {
         let resultMap: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
 
         const tasks: Promise<[string, Map<string, string>]>[] = [];
-        subDirs.forEach(function(subDir: string) {
+        subDirs.forEach((subDir: string) => {
             tasks.push(Storage.parseCSVAsync(subDir));
         });
 
         let csvResults: [string, Map<string, string>][] = await Promise.all(tasks);
-        csvResults.forEach(function(result: [string, Map<string, string>]) {
+        csvResults.forEach((result: [string, Map<string, string>]) => {
             resultMap.set(result[0], result[1]);
         });
 
@@ -166,8 +165,7 @@ export class UserData {
     private createLessons(packs: Pack[]): Lesson[] {
         let lessons: Lesson[] = [];
         let previousSeenPacks: Pack[] = [];
-        packs.forEach(function(pack: Pack) {
-            debugger;
+        packs.forEach((pack: Pack) => {
             let combinedPacks: Pack[] = [pack].concat(previousSeenPacks);
             lessons.push(new Lesson(combinedPacks));
 
@@ -211,7 +209,7 @@ export class UserData {
         let lastLesson: Lesson = this.lessons[this.currentLessonIndex];
 
         let seenReps: number = 0;
-        lastLesson.packs.forEach(function(pack: Pack) {
+        lastLesson.packs.forEach((pack: Pack) => {
             seenReps += pack.entries.length;
         });
 

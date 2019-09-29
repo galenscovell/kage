@@ -108,7 +108,7 @@ export class Storage {
             let csvData: Row[] = await csv(csvInput,{
                 headers: ['index', 'sentence'], separator: ',', skipLines: 1});
 
-            csvData.forEach(function(row: Row) {
+            csvData.forEach((row: Row) => {
                 textMap.set(`${row['index']}.mp3`, row['sentence']);
             });
         }

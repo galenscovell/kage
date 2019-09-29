@@ -16,8 +16,9 @@ const pack_1 = require("./pack");
 const storage_1 = require("../storage");
 class UserData {
     constructor() {
-        this.repsPerEntry = 4;
         this.beganDate = new Date();
+        this.currentLessonIndex = 0;
+        this.currentReps = 0;
     }
     /**
      * Iterate across all files in data directory, creating individual entries, packs and lessons.
@@ -39,11 +40,11 @@ class UserData {
             let entryMap = new Map();
             let textMaps = yield UserData.createTextMapsAsync(subDirs);
             let entryCount = 0;
-            subDirs.forEach(function (subDir) {
+            subDirs.forEach((subDir) => {
                 let subDirEntries = [];
                 let audioFiles = storage_1.Storage.getFilesWithExt(subDir, 'mp3');
                 let textMap = textMaps.get(subDir);
-                audioFiles.forEach(function (fileName) {
+                audioFiles.forEach((fileName) => {
                     let text = null;
                     if (textMap.has(fileName)) {
                         text = textMap.get(fileName);
@@ -63,11 +64,11 @@ class UserData {
         return __awaiter(this, void 0, void 0, function* () {
             let resultMap = new Map();
             const tasks = [];
-            subDirs.forEach(function (subDir) {
+            subDirs.forEach((subDir) => {
                 tasks.push(storage_1.Storage.parseCSVAsync(subDir));
             });
             let csvResults = yield Promise.all(tasks);
-            csvResults.forEach(function (result) {
+            csvResults.forEach((result) => {
                 resultMap.set(result[0], result[1]);
             });
             return resultMap;
@@ -142,8 +143,7 @@ class UserData {
     createLessons(packs) {
         let lessons = [];
         let previousSeenPacks = [];
-        packs.forEach(function (pack) {
-            debugger;
+        packs.forEach((pack) => {
             let combinedPacks = [pack].concat(previousSeenPacks);
             lessons.push(new lesson_1.Lesson(combinedPacks));
             previousSeenPacks.unshift(pack);
@@ -176,14 +176,16 @@ class UserData {
     }
     /**
      * Update data following the end of a user's training session.
+     *
+     * @param {number} repsPerEntry: Number of reps per entry the user has defined.
      */
-    update() {
+    update(repsPerEntry) {
         let lastLesson = this.lessons[this.currentLessonIndex];
         let seenReps = 0;
-        lastLesson.packs.forEach(function (pack) {
+        lastLesson.packs.forEach((pack) => {
             seenReps += pack.entries.length;
         });
-        this.currentReps += (seenReps * this.repsPerEntry);
+        this.currentReps += (seenReps * repsPerEntry);
         this.currentLessonIndex++;
         this.lastStudiedDate = new Date();
     }
