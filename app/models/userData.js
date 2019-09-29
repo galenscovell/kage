@@ -11,18 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const entry_1 = require("./entry");
+const lesson_1 = require("./lesson");
 const pack_1 = require("./pack");
 const storage_1 = require("../storage");
 class UserData {
-    constructor(entriesPerPack) {
+    constructor() {
         this.repsPerEntry = 4;
         this.beganDate = new Date();
-        this.entriesPerPack = entriesPerPack;
-        this.totalPacks = 0;
-        this.packs = [];
     }
     /**
-     * Iterate across all files in data directory, creating individual entries.
+     * Iterate across all files in data directory, creating individual entries, packs and lessons.
      *
      * Notes:
      *  Organize data files into sub-directories in the data directory. Each of these will be considered a separate 'source'.
@@ -33,13 +31,14 @@ class UserData {
      *  Each CSV row should be two columns: the name of the file (without extension), and the text to display for that entry.
      *  The CSV is not required for ach sub-directory. If not found it will be ignored silently.
      *
-     * @returns {Entry[]} Array of entry objects.
+     * @param {number} entriesPerPack: Number of entries per each pack.
      */
-    createAsync() {
+    createAsync(entriesPerPack) {
         return __awaiter(this, void 0, void 0, function* () {
             let subDirs = storage_1.Storage.getDirectories();
             let entryMap = new Map();
             let textMaps = yield UserData.createTextMapsAsync(subDirs);
+            let entryCount = 0;
             subDirs.forEach(function (subDir) {
                 let subDirEntries = [];
                 let audioFiles = storage_1.Storage.getFilesWithExt(subDir, 'mp3');
@@ -52,9 +51,12 @@ class UserData {
                     let newEntry = new entry_1.Entry(path.join(__dirname, '..', 'data', subDir, fileName), text);
                     subDirEntries.push(newEntry);
                 });
+                entryCount += subDirEntries.length;
                 entryMap.set(subDir, subDirEntries);
             });
-            this.createPacks(entryMap);
+            this.totalEntries = entryCount;
+            let packs = this.createPacks(entryMap, entriesPerPack);
+            this.lessons = this.createLessons(packs);
         });
     }
     static createTextMapsAsync(subDirs) {
@@ -72,36 +74,23 @@ class UserData {
         });
     }
     /**
-     * Assemble all Entries into daily packs that will be displayed to the user.
+     * Assemble all entries into packs of entries of a defined length.
      * Pulls in entries round-robin across sub-directory sources in data folder.
      *
-     * A pack is designed to present each entry to the user a certain number of times
-     * over the course of a few days to imprint on their memory.
-     *
-     * Pack format for first 6 days:
-         n-4, n-3, n-2, n-1, n
-
-         -  -  -  -  1
-         -  -  -  1  2
-         -  -  1  2  3
-         -  1  2  3  4
-         1  2  3  4  5
-         2  3  4  5  6
-     *
      * @param {Map<string, Entry[]>} entryMap: Map of source name to its Array of Entry objects.
+     * @param {number} entriesPerPack: Number of entries per each pack.
+     * @returns {Pack[]} Assembled packs.
      */
-    createPacks(entryMap) {
+    createPacks(entryMap, entriesPerPack) {
         let sources = Array.from(entryMap.keys());
         let sourceIndexTracker = new Map();
         for (let source of sources) {
-            this.totalPacks += entryMap.get(source).length;
             sourceIndexTracker.set(source, 0);
         }
-        // Add "entriesPerPack" amount to end to account for fade out of entries in sets (see example in doc)
-        this.totalPacks += this.entriesPerPack;
         // Add entries to packs round robin across sources
+        let packs = [];
         let usedSourceIdx = 0;
-        let previousEntries = [];
+        let assembledPack = [];
         while (sources.length > 0) {
             // Which source to use, and which entry index we are currently on within that source
             if (usedSourceIdx >= sources.length) {
@@ -114,36 +103,72 @@ class UserData {
                 sources.splice(usedSourceIdx, 1);
                 continue;
             }
-            // Pack is entries n-4, n-3, n-2, n-1, n
             let currentEntry = entryMap.get(usedSourceKey)[usedSourceEntryIdx];
-            let entriesForPack = [currentEntry].concat(previousEntries);
-            this.packs.push(new pack_1.Pack(entriesForPack));
-            // Update last ("entriesPerPack" - 1) entries, removing last (oldest) entry if over ("entriesPerPack" - 1)
-            previousEntries.unshift(currentEntry);
-            if (previousEntries.length > this.entriesPerPack - 1) {
-                previousEntries.pop();
+            assembledPack.push(currentEntry);
+            // Add new pack once we have enough entries amassed, then clear it
+            if (assembledPack.length >= entriesPerPack) {
+                packs.push(new pack_1.Pack(assembledPack));
+                assembledPack = [];
             }
             // Increment source and source entry index trackers
             sourceIndexTracker.set(usedSourceKey, usedSourceEntryIdx + 1);
             usedSourceIdx++;
         }
-        // Fade out the remaining entries, adding no new ones
-        while (previousEntries.length > 1) {
-            previousEntries.pop();
-            let remainingEntries = [].concat(previousEntries);
-            this.packs.push(new pack_1.Pack(remainingEntries));
+        // Add any remaining entries as final pack
+        if (assembledPack.length > 0) {
+            packs.push(new pack_1.Pack(assembledPack));
         }
-        debugger;
+        this.totalPacks = packs.length;
+        return packs;
     }
     /**
-     * Find and return the next Pack to be presented to the user.
+     * Create lessons which represent a day of study for the user. Each lesson contains 5 packs.
+     * A lesson is designed to present each entry to the user a certain number of times
+     * over the course of a few days to imprint on their memory.
+     *
+     * Lesson format for first 6 days:
+         n-4, n-3, n-2, n-1, n
+
+         -  -  -  -  1
+         -  -  -  1  2
+         -  -  1  2  3
+         -  1  2  3  4
+         1  2  3  4  5
+         2  3  4  5  6
+     *
+     * @param {Pack[]} packs: Assembled packs to be put into lessons.
+     * @returns {Lesson[]} Assembled lessons.
+     */
+    createLessons(packs) {
+        let lessons = [];
+        let previousSeenPacks = [];
+        packs.forEach(function (pack) {
+            debugger;
+            let combinedPacks = [pack].concat(previousSeenPacks);
+            lessons.push(new lesson_1.Lesson(combinedPacks));
+            previousSeenPacks.unshift(pack);
+            if (previousSeenPacks.length > 4) {
+                previousSeenPacks.pop();
+            }
+        });
+        // Fade out the remaining entries, adding no new ones
+        while (previousSeenPacks.length > 1) {
+            previousSeenPacks.pop();
+            let remainingPacks = [].concat(previousSeenPacks);
+            lessons.push(new lesson_1.Lesson(remainingPacks));
+        }
+        this.totalLessons = lessons.length;
+        return lessons;
+    }
+    /**
+     * Find and return the next Lesson to be presented to the user.
      * If none exists, return null.
      *
-     * @returns {Pack} Pack object.
+     * @returns {Lesson} Lesson object.
      */
-    getNextPack() {
-        if (this.currentPackIndex < this.packs.length) {
-            return this.packs[this.currentPackIndex];
+    getNextLesson() {
+        if (this.currentLessonIndex < this.lessons.length) {
+            return this.lessons[this.currentLessonIndex];
         }
         else {
             return null;
@@ -153,9 +178,13 @@ class UserData {
      * Update data following the end of a user's training session.
      */
     update() {
-        let lastPack = this.packs[this.currentPackIndex];
-        this.currentReps += lastPack.entries.length * this.repsPerEntry;
-        this.currentPackIndex++;
+        let lastLesson = this.lessons[this.currentLessonIndex];
+        let seenReps = 0;
+        lastLesson.packs.forEach(function (pack) {
+            seenReps += pack.entries.length;
+        });
+        this.currentReps += (seenReps * this.repsPerEntry);
+        this.currentLessonIndex++;
         this.lastStudiedDate = new Date();
     }
 }

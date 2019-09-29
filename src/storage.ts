@@ -31,8 +31,8 @@ export class Storage {
             fs.unlinkSync(this.path);
         }
 
-        let newUserData: UserData = new UserData(entriesPerPack);
-        await newUserData.createAsync();
+        let newUserData: UserData = new UserData();
+        await newUserData.createAsync(entriesPerPack);
         this.save(newUserData);
 
         return newUserData;

@@ -33,8 +33,8 @@ class Storage {
             if (fs.existsSync(this.path)) {
                 fs.unlinkSync(this.path);
             }
-            let newUserData = new userData_1.UserData(entriesPerPack);
-            yield newUserData.createAsync();
+            let newUserData = new userData_1.UserData();
+            yield newUserData.createAsync(entriesPerPack);
             this.save(newUserData);
             return newUserData;
         });
