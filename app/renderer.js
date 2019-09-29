@@ -20,7 +20,7 @@ let currentPageId = '';
 let $paneElement;
 let $hiddenElement;
 let storage = new storage_1.Storage(process.env.username || process.env.user);
-let userData;
+let userData = null;
 function changePage(pageId) {
     if (currentPageId !== pageId) {
         let $currentContainer = $(`#${currentPageId}-${containerId}`);
@@ -36,22 +36,19 @@ function changePage(pageId) {
         currentPageId = pageId;
     }
 }
-function beginLoad() {
-    $('#splash-content').fadeIn(100, () => __awaiter(this, void 0, void 0, function* () {
-        userData = storage.load();
-        endLoad();
-    }));
-}
-function endLoad() {
-    $('#splash-content').fadeOut(100, () => {
-        changePage(dashboardId);
-        let $header = $('#header');
-        let $primaryContent = $(`#primary-${containerId}`);
-        $(`#splash-${containerId}`).appendTo($hiddenElement);
-        $header.prependTo($('.window'));
-        $primaryContent.appendTo($('.window-content'));
-        $header.css('display', 'inline-block');
-        $primaryContent.css('display', 'flex');
+function init() {
+    $('#splash-content').fadeIn(500, () => {
+        $('#splash-content').fadeOut(500, () => {
+            let $header = $('#header');
+            let $primaryContent = $(`#primary-${containerId}`);
+            $(`#splash-${containerId}`).appendTo($hiddenElement);
+            $header.prependTo($('.window'));
+            $primaryContent.appendTo($('.window-content'));
+            $header.css('display', 'inline-block');
+            $primaryContent.css('display', 'flex');
+            loadDashboard();
+            changePage(dashboardId);
+        });
     });
 }
 function createData(entriesPerPack) {
@@ -59,11 +56,29 @@ function createData(entriesPerPack) {
         userData = yield storage.createAsync(entriesPerPack);
     });
 }
+function loadDashboard() {
+    userData = storage.load();
+    if (userData !== null) {
+        $(`#${dashboardId}-reps-value`).text(`${userData.currentReps} reps`);
+        $(`#${dashboardId}-main-middle`).text(userData.getFormattedDateString());
+        $(`#${dashboardId}-sources`).text(userData.getFormattedSourcesString());
+        $(`#${dashboardId}-progress-value`).text(userData.getFormattedCompletionString());
+        $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', userData.getFormattedCompletionPctString());
+    }
+    else {
+        $(`#${dashboardId}-reps-value`).text('No rep data');
+        $(`#${dashboardId}-main-middle`).text('No date data');
+        $(`#${dashboardId}-sources`).text('No source data');
+        $(`#${dashboardId}-progress-value`).text('No completion data');
+        $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', '0%');
+    }
+}
 document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
     // Nav bar buttons
     $(`#${dashboardId}-${buttonId}`).on('click', () => {
+        loadDashboard();
         changePage(dashboardId);
     });
     $(`#${trainingId}-${buttonId}`).on('click', () => {
@@ -92,11 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
             $regenButton.addClass('disabled');
         }
     });
-    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', () => {
-        createData(5);
-    });
+    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', () => __awaiter(void 0, void 0, void 0, function* () {
+        yield createData(5).then(() => {
+            loadDashboard();
+        });
+        // Reset the regen switch and button
+        $(`#${dashboardId}-regenerate-switch-input`).trigger('click');
+    }));
     // Training page functions
     // About page functions
-    beginLoad();
+    init();
 });
 //# sourceMappingURL=renderer.js.map

@@ -9,8 +9,10 @@ import {Storage} from '../storage';
 export class UserData {
     private lessons: Lesson[];
 
-    public beganDate: Date;
-    public lastStudiedDate: Date;
+    private readonly beganDate: Date;
+    private lastStudiedDate: Date;
+
+    public sources: string[];
 
     public totalEntries: number;
     public totalPacks: number;
@@ -24,6 +26,37 @@ export class UserData {
         this.beganDate = new Date();
         this.currentLessonIndex = 0;
         this.currentReps = 0;
+    }
+
+    public getFormattedDateString(): string {
+        let beganDate: Date = new Date(this.beganDate);
+        let beganMonth: number = beganDate.getMonth();
+        let beganDay: number = beganDate.getDay();
+        let beganYear: number = beganDate.getFullYear();
+        let began: string = `${beganMonth}-${beganDay}-${beganYear}`;
+
+        let last: string = `No days studied`;
+        if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
+            let lastDate: Date = new Date(this.lastStudiedDate);
+            let lastMonth: number = lastDate.getMonth();
+            let lastDay: number = lastDate.getDay();
+            let lastYear: number = lastDate.getFullYear();
+            last = `${lastMonth}-${lastDay}-${lastYear}`;
+        }
+
+        return `Created: ${began} | Last Studied: ${last}`
+    }
+
+    public getFormattedSourcesString(): string {
+        return `Sources: ${this.sources.join(', ')}`;
+    }
+
+    public getFormattedCompletionString(): string {
+        return `${this.getFormattedCompletionPctString()} complete`;
+    }
+
+    public getFormattedCompletionPctString(): string {
+        return `${this.currentLessonIndex / this.totalLessons}%`;
     }
 
     /**
@@ -41,13 +74,13 @@ export class UserData {
      * @param {number} entriesPerPack: Number of entries per each pack.
      */
     public async createAsync(entriesPerPack: number): Promise<void> {
-        let subDirs: string[] = Storage.getDirectories();
+        this.sources = Storage.getDirectories();
 
         let entryMap: Map<string, Entry[]> = new Map<string, Entry[]>();
-        let textMaps: Map<string, Map<string, string>> = await UserData.createTextMapsAsync(subDirs);
+        let textMaps: Map<string, Map<string, string>> = await this.createTextMapsAsync();
 
         let entryCount: number = 0;
-        subDirs.forEach((subDir: string) => {
+        this.sources.forEach((subDir: string) => {
             let subDirEntries: Entry[] = [];
             let audioFiles: string[] = Storage.getFilesWithExt(subDir, 'mp3');
             let textMap: Map<string, string> = textMaps.get(subDir);
@@ -71,11 +104,11 @@ export class UserData {
         this.lessons = this.createLessons(packs);
     }
 
-    private static async createTextMapsAsync(subDirs: string[]): Promise<Map<string, Map<string, string>>> {
+    private async createTextMapsAsync(): Promise<Map<string, Map<string, string>>> {
         let resultMap: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
 
         const tasks: Promise<[string, Map<string, string>]>[] = [];
-        subDirs.forEach((subDir: string) => {
+        this.sources.forEach((subDir: string) => {
             tasks.push(Storage.parseCSVAsync(subDir));
         });
 
@@ -96,7 +129,7 @@ export class UserData {
      * @returns {Pack[]} Assembled packs.
      */
     private createPacks(entryMap: Map<string, Entry[]>, entriesPerPack: number): Pack[] {
-        let sources: string[] = Array.from(entryMap.keys());
+        let sources: string[] = Array.from(this.sources.values());
 
         let sourceIndexTracker: Map<string, number> = new Map<string, number>();
         for (let source of sources) {

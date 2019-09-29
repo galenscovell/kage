@@ -9,14 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const electron_1 = require("electron");
-const path = require("path");
-const fs = require("fs");
-require("reflect-metadata");
 const class_transformer_1 = require("class-transformer");
-const class_transformer_2 = require("class-transformer");
-const csv = require("neat-csv");
+const electron_1 = require("electron");
+const fs = require("fs");
+const path = require("path");
+require("reflect-metadata");
 const userData_1 = require("./models/userData");
+const csv = require("neat-csv");
 class Storage {
     constructor(configName) {
         let userDataPath = (electron_1.app || electron_1.remote.app).getPath('userData');
@@ -40,7 +39,7 @@ class Storage {
         });
     }
     /**
-     * Attempt to load in a saved version of userData. If not exists, return null;
+     * Attempt to load in a saved version of userData. If not exists, return null.
      *
      * @returns {UserData} The loaded data, or null.
      */
@@ -59,7 +58,7 @@ class Storage {
      * @param {UserData} userData: The data to be saved to disk.
      */
     save(userData) {
-        let serialized = JSON.stringify(class_transformer_2.classToPlain(userData));
+        let serialized = JSON.stringify(class_transformer_1.classToPlain(userData));
         fs.writeFileSync(this.path, serialized);
     }
     /**

@@ -19,7 +19,7 @@ function createWindow(): void {
     });
 
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', () => {
         mainWindow = null;
@@ -30,9 +30,11 @@ app.on('ready', () => {
     ipcMain.on('close-main-window', function () {
         app.quit();
     });
+
     ipcMain.on('minimize-main-window', function () {
         mainWindow.minimize();
     });
+
     createWindow();
 });
 

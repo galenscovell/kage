@@ -15,7 +15,7 @@ let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
 
 let storage: Storage = new Storage(process.env.username || process.env.user);
-let userData: UserData;
+let userData: UserData = null;
 
 
 function changePage(pageId: string): void {
@@ -37,31 +37,45 @@ function changePage(pageId: string): void {
     }
 }
 
-function beginLoad(): void {
-    $('#splash-content').fadeIn(100, async (): Promise<void> => {
-        userData = storage.load();
-        endLoad();
-    });
-}
+function init(): void {
+    $('#splash-content').fadeIn(500, () => {
+        $('#splash-content').fadeOut(500, () => {
+            let $header = $('#header');
+            let $primaryContent = $(`#primary-${containerId}`);
 
-function endLoad(): void {
-    $('#splash-content').fadeOut(100, () => {
-        changePage(dashboardId);
+            $(`#splash-${containerId}`).appendTo($hiddenElement);
+            $header.prependTo($('.window'));
+            $primaryContent.appendTo($('.window-content'));
 
-        let $header = $('#header');
-        let $primaryContent = $(`#primary-${containerId}`);
+            $header.css('display', 'inline-block');
+            $primaryContent.css('display', 'flex');
 
-        $(`#splash-${containerId}`).appendTo($hiddenElement);
-        $header.prependTo($('.window'));
-        $primaryContent.appendTo($('.window-content'));
-
-        $header.css('display', 'inline-block');
-        $primaryContent.css('display', 'flex');
+            loadDashboard();
+            changePage(dashboardId);
+        });
     });
 }
 
 async function createData(entriesPerPack: number): Promise<void> {
     userData = await storage.createAsync(entriesPerPack);
+}
+
+function loadDashboard(): void {
+    userData = storage.load();
+
+    if (userData !== null) {
+        $(`#${dashboardId}-reps-value`).text(`${userData.currentReps} reps`);
+        $(`#${dashboardId}-main-middle`).text(userData.getFormattedDateString());
+        $(`#${dashboardId}-sources`).text(userData.getFormattedSourcesString());
+        $(`#${dashboardId}-progress-value`).text(userData.getFormattedCompletionString());
+        $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', userData.getFormattedCompletionPctString());
+    } else {
+        $(`#${dashboardId}-reps-value`).text('No rep data');
+        $(`#${dashboardId}-main-middle`).text('No date data');
+        $(`#${dashboardId}-sources`).text('No source data');
+        $(`#${dashboardId}-progress-value`).text('No completion data');
+        $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', '0%');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -70,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Nav bar buttons
     $(`#${dashboardId}-${buttonId}`).on('click', () => {
+        loadDashboard();
         changePage(dashboardId);
     });
 
@@ -105,13 +120,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', () => {
-        createData(5);
+    $(`#${dashboardId}-regenerate-${buttonId}`).on('click', async () => {
+        await createData(5).then(() => {
+            loadDashboard();
+        });
+
+        // Reset the regen switch and button
+        $(`#${dashboardId}-regenerate-switch-input`).trigger('click');
     });
 
     // Training page functions
 
     // About page functions
 
-    beginLoad();
+    init();
 });

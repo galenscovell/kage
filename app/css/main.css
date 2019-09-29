@@ -2,10 +2,11 @@
     --dark-bg: #3a5e6c;
     --light-bg: #f3f3f3;
     --font-light: #f3f3f3;
+    --font-lighter: #828282;
     --font-medium: #e3dac9;
     --font-dark: rgba(44, 62, 80, 1.0);
     --text-shadow: rgba(52, 73, 94, 0.5);
-    --shadow: rgba(52, 73, 94, 0.2);
+    --shadow: rgba(52, 73, 94, 0.3);
 
     --general-theme: #41B3A3;
     --dashboard-theme: #7DC2AD;
@@ -76,6 +77,12 @@ body {
     -webkit-app-region: drag;
 }
 
+.disabled {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+
 /* List Group */
 .media-object {
     margin-top: 3px;
@@ -112,9 +119,9 @@ body {
 }
 
 .list-group-item {
-    padding: 17px;
+    padding: 14px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     color: var(--font-light);
     width: 160px;
     transition: 0.2s;
@@ -158,8 +165,8 @@ body {
     display: inline-block;
     text-align: center;
     background-color: var(--light-bg);
-    border-radius: 4px;
-    box-shadow: 2px 2px 2px var(--shadow);
+    border-radius: 3px;
+    box-shadow: 3px 3px 1px var(--shadow);
 }
 
 .sub-container-main {
@@ -173,7 +180,7 @@ body {
     position: relative;
     top: 0;
     height: 48px;
-    line-height: 42px;
+    line-height: 44px;
     width: 100%;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -233,6 +240,7 @@ body {
     display: none;
     text-align: center;
     background-color: var(--dashboard-theme);
+    font-family: "Kyokasho", serif;
 }
 
 #dashboard-top {
@@ -242,6 +250,74 @@ body {
 
 #dashboard-header {
     background-color: var(--about-theme);
+}
+
+#dashboard-main {
+    padding: 8px;
+    text-align: center;
+    height: 72%;
+}
+
+#dashboard-main-top {
+    height: 55%;
+    margin-bottom: 6px;
+}
+
+#dashboard-reps {
+    display: inline-block;
+    width: 30%;
+    height: 100%;
+}
+
+#dashboard-reps-icon {
+    width: 100%;
+    height: 68px;
+    margin-bottom: 8px;
+}
+
+#dashboard-reps-icon img {
+    width: auto;
+    height: 100%;
+}
+
+#dashboard-reps-value {
+    width: 100%;
+    height: 16px;
+    line-height: 16px;
+    font-size: 16px;
+}
+
+#dashboard-progress {
+    display: inline-block;
+    width: 65%;
+    height: 100%;
+}
+
+#dashboard-progress-bar {
+    margin-top: 9%;
+}
+
+#dashboard-progress-value {
+    font-size: 16px;
+    margin-right: 40px;
+    text-align: right;
+}
+
+#dashboard-main-middle {
+    height: 20%;
+    margin-top: 16px;
+    font-size: 16px;
+    color: var(--font-lighter);
+}
+
+#dashboard-main-bottom {
+    height: 20%;
+    font-size: 16px;
+    color: var(--font-lighter);
+}
+
+#dashboard-sources {
+    font-size: 14px;
 }
 
 #dashboard-bottom {
@@ -255,7 +331,7 @@ body {
     font-size: 16px;
     background-color: var(--dark-bg);
     color: var(--font-light);
-    border-radius: 4px;
+    border-radius: 3px;
     height: 14px;
     line-height: 14px;
     width: 100px;
@@ -332,7 +408,7 @@ body {
 
 #about-middle {
     height: 100%;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
 /* Quit */
@@ -469,7 +545,7 @@ body {
 }
 
 
-/** Switches **/
+/** Switches and bars **/
 .switch {
     position: relative;
     display: inline-block;
@@ -519,8 +595,25 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+.progress-bar {
+    border-radius: 3px;
+    overflow: hidden;
+    width: 90%;
+}
 
-.disabled {
-    opacity: 0.2;
-    pointer-events: none;
+.progress-bar span {
+    display: block;
+    border-radius: 3px;
+}
+
+.bar {
+    background: var(--dark-bg);
+    padding: 4px;
+}
+
+.progress {
+    background: var(--highlight);
+    color: #fff;
+    padding: 12px;
+    width: 0;
 }

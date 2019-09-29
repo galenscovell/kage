@@ -20,6 +20,31 @@ class UserData {
         this.currentLessonIndex = 0;
         this.currentReps = 0;
     }
+    getFormattedDateString() {
+        let beganDate = new Date(this.beganDate);
+        let beganMonth = beganDate.getMonth();
+        let beganDay = beganDate.getDay();
+        let beganYear = beganDate.getFullYear();
+        let began = `${beganMonth}-${beganDay}-${beganYear}`;
+        let last = `No days studied`;
+        if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
+            let lastDate = new Date(this.lastStudiedDate);
+            let lastMonth = lastDate.getMonth();
+            let lastDay = lastDate.getDay();
+            let lastYear = lastDate.getFullYear();
+            last = `${lastMonth}-${lastDay}-${lastYear}`;
+        }
+        return `Created: ${began} | Last Studied: ${last}`;
+    }
+    getFormattedSourcesString() {
+        return `Sources: ${this.sources.join(', ')}`;
+    }
+    getFormattedCompletionString() {
+        return `${this.getFormattedCompletionPctString()} complete`;
+    }
+    getFormattedCompletionPctString() {
+        return `${this.currentLessonIndex / this.totalLessons}%`;
+    }
     /**
      * Iterate across all files in data directory, creating individual entries, packs and lessons.
      *
@@ -36,11 +61,11 @@ class UserData {
      */
     createAsync(entriesPerPack) {
         return __awaiter(this, void 0, void 0, function* () {
-            let subDirs = storage_1.Storage.getDirectories();
+            this.sources = storage_1.Storage.getDirectories();
             let entryMap = new Map();
-            let textMaps = yield UserData.createTextMapsAsync(subDirs);
+            let textMaps = yield this.createTextMapsAsync();
             let entryCount = 0;
-            subDirs.forEach((subDir) => {
+            this.sources.forEach((subDir) => {
                 let subDirEntries = [];
                 let audioFiles = storage_1.Storage.getFilesWithExt(subDir, 'mp3');
                 let textMap = textMaps.get(subDir);
@@ -60,11 +85,11 @@ class UserData {
             this.lessons = this.createLessons(packs);
         });
     }
-    static createTextMapsAsync(subDirs) {
+    createTextMapsAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             let resultMap = new Map();
             const tasks = [];
-            subDirs.forEach((subDir) => {
+            this.sources.forEach((subDir) => {
                 tasks.push(storage_1.Storage.parseCSVAsync(subDir));
             });
             let csvResults = yield Promise.all(tasks);
@@ -83,7 +108,7 @@ class UserData {
      * @returns {Pack[]} Assembled packs.
      */
     createPacks(entryMap, entriesPerPack) {
-        let sources = Array.from(entryMap.keys());
+        let sources = Array.from(this.sources.values());
         let sourceIndexTracker = new Map();
         for (let source of sources) {
             sourceIndexTracker.set(source, 0);

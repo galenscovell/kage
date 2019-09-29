@@ -1,14 +1,13 @@
+import {classToPlain, plainToClass} from 'class-transformer';
 import {app, remote} from 'electron';
-import * as path from 'path';
 import * as fs from 'fs';
+import {Row} from 'neat-csv';
+import * as path from 'path';
 
 import 'reflect-metadata';
-import {plainToClass} from 'class-transformer';
-import {classToPlain} from 'class-transformer';
-import {Row} from 'neat-csv';
-import csv = require('neat-csv');
 
 import {UserData} from './models/userData';
+import csv = require('neat-csv');
 
 
 export class Storage {
@@ -39,14 +38,13 @@ export class Storage {
     }
 
     /**
-     * Attempt to load in a saved version of userData. If not exists, return null;
+     * Attempt to load in a saved version of userData. If not exists, return null.
      *
      * @returns {UserData} The loaded data, or null.
      */
     public load(): UserData {
         try {
             let serialized: object = JSON.parse(fs.readFileSync(this.path, 'utf8'));
-
             return plainToClass(UserData, serialized);
         } catch (error) {
             return null;
