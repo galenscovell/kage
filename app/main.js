@@ -8,7 +8,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true
         },
-        icon: path.join(__dirname, 'img', 'soup.png'),
+        icon: path.join(__dirname, 'img', 'noodles.png'),
         width: 800,
         height: 356,
         resizable: false,

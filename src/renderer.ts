@@ -52,6 +52,10 @@ function init(): void {
 
             loadDashboard();
             changePage(dashboardId);
+
+            if (!userData.dayHasPassedSinceLastStudied()) {
+                $(`#${trainingId}-${buttonId}`).addClass('disabled');
+            }
         });
     });
 }

@@ -48,6 +48,9 @@ function init() {
             $primaryContent.css('display', 'flex');
             loadDashboard();
             changePage(dashboardId);
+            if (!userData.dayHasPassedSinceLastStudied()) {
+                $(`#${trainingId}-${buttonId}`).addClass('disabled');
+            }
         });
     });
 }

@@ -36,7 +36,9 @@ export class UserData {
         let began: string = `${beganMonth}-${beganDay}-${beganYear}`;
 
         let last: string = `No days studied`;
-        if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
+        if (!this.dayHasPassedSinceLastStudied()) {
+            last = 'Today';
+        } else if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
             let lastDate: Date = new Date(this.lastStudiedDate);
             let lastMonth: number = lastDate.getMonth();
             let lastDay: number = lastDate.getDate();
@@ -57,6 +59,19 @@ export class UserData {
 
     public getFormattedCompletionPctString(): string {
         return `${this.currentLessonIndex / this.totalLessons}%`;
+    }
+
+    public dayHasPassedSinceLastStudied(): boolean {
+        if (this.lastStudiedDate === null || this.lastStudiedDate === undefined) {
+            return true;
+        }
+
+        let lastDate: Date = new Date(this.lastStudiedDate);
+        let currentDate: Date = new Date();
+
+        let dayDifference: number = currentDate.getDate() - lastDate.getDate();
+
+        return dayDifference >= 1;
     }
 
     /**

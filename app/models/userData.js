@@ -27,7 +27,10 @@ class UserData {
         let beganYear = beganDate.getFullYear();
         let began = `${beganMonth}-${beganDay}-${beganYear}`;
         let last = `No days studied`;
-        if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
+        if (!this.dayHasPassedSinceLastStudied()) {
+            last = 'Today';
+        }
+        else if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
             let lastDate = new Date(this.lastStudiedDate);
             let lastMonth = lastDate.getMonth();
             let lastDay = lastDate.getDate();
@@ -44,6 +47,15 @@ class UserData {
     }
     getFormattedCompletionPctString() {
         return `${this.currentLessonIndex / this.totalLessons}%`;
+    }
+    dayHasPassedSinceLastStudied() {
+        if (this.lastStudiedDate === null || this.lastStudiedDate === undefined) {
+            return true;
+        }
+        let lastDate = new Date(this.lastStudiedDate);
+        let currentDate = new Date();
+        let dayDifference = currentDate.getDate() - lastDate.getDate();
+        return dayDifference >= 1;
     }
     /**
      * Iterate across all files in data directory, creating individual entries, packs and lessons.
