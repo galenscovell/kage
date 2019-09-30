@@ -2,7 +2,7 @@ import {app, BrowserWindow, ipcMain} from 'electron';
 import * as path from 'path';
 
 
-let mainWindow: Electron.BrowserWindow;
+let mainWindow: BrowserWindow;
 
 
 function createWindow(): void {
@@ -10,6 +10,7 @@ function createWindow(): void {
         webPreferences: {
             nodeIntegration: true
         },
+        icon: path.join(__dirname, 'img', 'soup.png'),
         width: 800,
         height: 356,
         resizable: false,
@@ -19,7 +20,7 @@ function createWindow(): void {
     });
 
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', () => {
         mainWindow = null;

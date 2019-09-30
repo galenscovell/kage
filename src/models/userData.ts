@@ -31,7 +31,7 @@ export class UserData {
     public getFormattedDateString(): string {
         let beganDate: Date = new Date(this.beganDate);
         let beganMonth: number = beganDate.getMonth();
-        let beganDay: number = beganDate.getDay();
+        let beganDay: number = beganDate.getDate();
         let beganYear: number = beganDate.getFullYear();
         let began: string = `${beganMonth}-${beganDay}-${beganYear}`;
 
@@ -39,7 +39,7 @@ export class UserData {
         if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
             let lastDate: Date = new Date(this.lastStudiedDate);
             let lastMonth: number = lastDate.getMonth();
-            let lastDay: number = lastDate.getDay();
+            let lastDay: number = lastDate.getDate();
             let lastYear: number = lastDate.getFullYear();
             last = `${lastMonth}-${lastDay}-${lastYear}`;
         }

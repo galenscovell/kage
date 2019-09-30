@@ -23,14 +23,14 @@ class UserData {
     getFormattedDateString() {
         let beganDate = new Date(this.beganDate);
         let beganMonth = beganDate.getMonth();
-        let beganDay = beganDate.getDay();
+        let beganDay = beganDate.getDate();
         let beganYear = beganDate.getFullYear();
         let began = `${beganMonth}-${beganDay}-${beganYear}`;
         let last = `No days studied`;
         if (this.lastStudiedDate !== null && this.lastStudiedDate !== undefined) {
             let lastDate = new Date(this.lastStudiedDate);
             let lastMonth = lastDate.getMonth();
-            let lastDay = lastDate.getDay();
+            let lastDay = lastDate.getDate();
             let lastYear = lastDate.getFullYear();
             last = `${lastMonth}-${lastDay}-${lastYear}`;
         }

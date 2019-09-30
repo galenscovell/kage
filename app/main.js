@@ -8,6 +8,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true
         },
+        icon: path.join(__dirname, 'img', 'soup.png'),
         width: 800,
         height: 356,
         resizable: false,
@@ -16,7 +17,7 @@ function createWindow() {
         titleBarStyle: 'hidden'
     });
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
     mainWindow.on('closed', () => {
         mainWindow = null;
     });

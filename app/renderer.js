@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
         $(`#${dashboardId}-regenerate-switch-input`).trigger('click');
     }));
     // Training page functions
-    // About page functions
     init();
 });
 //# sourceMappingURL=renderer.js.map

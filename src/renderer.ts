@@ -131,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Training page functions
 
-    // About page functions
 
     init();
 });

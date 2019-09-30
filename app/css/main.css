@@ -17,10 +17,7 @@
 
 }
 
-@font-face { font-family: "Kaiso"; src: url('../fonts/Kaiso-Next-B.otf'); }
 @font-face { font-family: "Kyokasho"; src: url('../fonts/Kyokasho.otf'); }
-@font-face { font-family: "Ronde"; src: url('../fonts/Ronde-B_square.otf'); }
-@font-face { font-family: "Shokaki"; src: url('../fonts/Shokaki.otf'); }
 
 html {
     height: 100%;
@@ -32,11 +29,11 @@ body {
     height: 100%;
     padding: 0;
     margin: 0;
-    font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", Helvetica, "Segoe UI", sans-serif;
     font-size: 13px;
     line-height: 1.6;
     color: #333;
     background-color: transparent;
+    font-family: "Kyokasho", serif;
 }
 
 .window {
@@ -125,7 +122,6 @@ body {
     color: var(--font-light);
     width: 160px;
     transition: 0.2s;
-    font-family: "Kyokasho", serif;
     text-shadow: 2px 2px 2px var(--text-shadow);
 }
 
@@ -200,7 +196,6 @@ body {
     text-align: left;
     font-size: 24px;
     color: var(--font-light);
-    font-family: "Kyokasho", serif;
     text-shadow: 2px 2px 2px var(--text-shadow);
 }
 
@@ -220,7 +215,6 @@ body {
     color: var(--font-light);
     font-size: 224px;
     line-height: 340px;
-    font-family: "Ronde", serif;
 }
 
 /* Primary content */
@@ -240,7 +234,6 @@ body {
     display: none;
     text-align: center;
     background-color: var(--dashboard-theme);
-    font-family: "Kyokasho", serif;
 }
 
 #dashboard-top {
@@ -336,7 +329,6 @@ body {
     line-height: 14px;
     width: 100px;
     transition: 0.2s;
-    font-family: "Kyokasho", serif;
     text-shadow: 2px 2px 2px var(--text-shadow);
 }
 
@@ -352,7 +344,6 @@ body {
     color: var(--font-dark);
     height: 14px;
     line-height: 14px;
-    font-family: "Kyokasho", serif;
 }
 
 #dashboard-regenerate-switch {
@@ -379,12 +370,43 @@ body {
     height: 35%;
 }
 
+.training-button {
+    display: inline-block;
+    margin-top: 6px;
+    margin-left: 12px;
+    margin-right: 12px;
+    height: 20px;
+    line-height: 18px;
+    border-radius: 3px;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--font-light);
+    background-color: var(--dark-bg);
+    width: 160px;
+    transition: 0.2s;
+    text-shadow: 2px 2px 2px var(--text-shadow);
+}
+
+.training-button:hover {
+    background-color: var(--highlight);
+    color: var(--font-light);
+    transition: 0.2s;
+}
+
 #training-header {
     background-color: var(--highlight);
 }
 
 #training-bottom {
     height: 60%;
+}
+
+#training-text {
+    color: var(--font-dark);
+    font-size: 14px;
+    text-align: left;
+    padding: 16px;
 }
 
 /* About */
@@ -468,15 +490,13 @@ body {
 .toolbar-header .title {
     position: fixed;
     left: 10px;
-    top: 1px;
-    margin-top: 1px;
     color: var(--font-light);
 }
 
 .title {
     display: inline-block;
     margin: 0;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     text-align: center;
     cursor: default;
