@@ -4,6 +4,7 @@ import {Entry} from './entry';
 import {Lesson} from './lesson';
 import {Pack} from './pack';
 import {Storage} from '../storage';
+import {Session} from './session';
 
 
 export class UserData {
@@ -235,14 +236,15 @@ export class UserData {
     }
 
     /**
-     * Find and return the next Lesson to be presented to the user.
+     * Generate and return the next Session to be presented to the user.
      * If none exists, return null.
      *
-     * @returns {Lesson} Lesson object.
+     * @param {number} repsPerEntry: Number of repetitions for each entry as defined by user.
+     * @returns {Session} Session object.
      */
-    public getNextLesson(): Lesson {
+    public prepareSession(repsPerEntry: number): Session {
         if (this.currentLessonIndex < this.lessons.length) {
-            return this.lessons[this.currentLessonIndex];
+            return new Session(this.lessons[this.currentLessonIndex], repsPerEntry);
         } else {
             return null;
         }
@@ -251,17 +253,10 @@ export class UserData {
     /**
      * Update data following the end of a user's training session.
      *
-     * @param {number} repsPerEntry: Number of reps per entry the user has defined.
+     * @param {Session} session: Session that was just completed.
      */
-    public update(repsPerEntry: number): void {
-        let lastLesson: Lesson = this.lessons[this.currentLessonIndex];
-
-        let seenReps: number = 0;
-        lastLesson.packs.forEach((pack: Pack) => {
-            seenReps += pack.entries.length;
-        });
-
-        this.currentReps += (seenReps * repsPerEntry);
+    public update(session: Session): void {
+        this.currentReps += session.reps.length;
         this.currentLessonIndex++;
         this.lastStudiedDate = new Date();
     }

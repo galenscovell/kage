@@ -1,5 +1,7 @@
 import {ipcRenderer} from 'electron';
-import {UserData} from "./models/userData";
+
+import {Session} from './models/session';
+import {UserData} from './models/userData';
 import {Storage} from './storage';
 
 
@@ -13,9 +15,14 @@ let currentPageId: string = '';
 
 let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
+let $trainingText: JQuery<HTMLElement>;
+let $trainingRemaining: JQuery<HTMLElement>;
 
 let storage: Storage = new Storage(process.env.username || process.env.user);
 let userData: UserData = null;
+let session: Session = null;
+
+let training: boolean = false;
 
 
 function changePage(pageId: string): void {
@@ -66,7 +73,6 @@ async function createData(entriesPerPack: number): Promise<void> {
 
 function loadDashboard(): void {
     userData = storage.load();
-
     if (userData !== null) {
         $(`#${dashboardId}-reps-value`).text(`${userData.currentReps} reps`);
         $(`#${dashboardId}-main-middle`).text(userData.getFormattedDateString());
@@ -82,6 +88,17 @@ function loadDashboard(): void {
     }
 }
 
+function loadTraining(): void {
+    if (userData !== null) {
+        session = userData.prepareSession(4);
+        session.setText($trainingText);
+        session.setRemaining($trainingRemaining);
+    } else {
+        $trainingText.text('No data loaded.');
+        $trainingRemaining.text('No data loaded.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
@@ -93,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     $(`#${trainingId}-${buttonId}`).on('click', () => {
+        loadTraining();
         changePage(trainingId);
     });
 
@@ -134,7 +152,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Training page functions
+    $trainingText = $(`#${trainingId}-text`);
+    $trainingRemaining = $(`#${trainingId}-remaining`);
 
+    $(`#${trainingId}-play-button`).on('click', async () => {
+        training = true;
+        session.playNextRep($trainingText, $trainingRemaining);
+    });
+
+    $(`#${trainingId}-pause-button`).on('click', () => {
+        training = false;
+    });
 
     init();
 });

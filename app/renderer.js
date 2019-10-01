@@ -19,8 +19,12 @@ const containerId = 'container';
 let currentPageId = '';
 let $paneElement;
 let $hiddenElement;
+let $trainingText;
+let $trainingRemaining;
 let storage = new storage_1.Storage(process.env.username || process.env.user);
 let userData = null;
+let session = null;
+let training = false;
 function changePage(pageId) {
     if (currentPageId !== pageId) {
         let $currentContainer = $(`#${currentPageId}-${containerId}`);
@@ -76,6 +80,17 @@ function loadDashboard() {
         $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', '0%');
     }
 }
+function loadTraining() {
+    if (userData !== null) {
+        session = userData.prepareSession(4);
+        session.setText($trainingText);
+        session.setRemaining($trainingRemaining);
+    }
+    else {
+        $trainingText.text('No data loaded.');
+        $trainingRemaining.text('No data loaded.');
+    }
+}
 document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
@@ -85,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         changePage(dashboardId);
     });
     $(`#${trainingId}-${buttonId}`).on('click', () => {
+        loadTraining();
         changePage(trainingId);
     });
     $(`#${aboutId}-${buttonId}`).on('click', () => {
@@ -118,6 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
         $(`#${dashboardId}-regenerate-switch-input`).trigger('click');
     }));
     // Training page functions
+    $trainingText = $(`#${trainingId}-text`);
+    $trainingRemaining = $(`#${trainingId}-remaining`);
+    $(`#${trainingId}-play-button`).on('click', () => __awaiter(void 0, void 0, void 0, function* () {
+        training = true;
+        session.playNextRep($trainingText, $trainingRemaining);
+    }));
+    $(`#${trainingId}-pause-button`).on('click', () => {
+        training = false;
+    });
     init();
 });
 //# sourceMappingURL=renderer.js.map

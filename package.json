@@ -13,6 +13,7 @@
   "author": "galen.scovell@gmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@types/howler": "^2.1.1",
     "@types/jquery": "^3.3.31",
     "class-transformer": "^0.2.3",
     "electron": "^6.0.10",

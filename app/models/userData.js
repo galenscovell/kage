@@ -14,6 +14,7 @@ const entry_1 = require("./entry");
 const lesson_1 = require("./lesson");
 const pack_1 = require("./pack");
 const storage_1 = require("../storage");
+const session_1 = require("./session");
 class UserData {
     constructor() {
         this.beganDate = new Date();
@@ -198,14 +199,15 @@ class UserData {
         return lessons;
     }
     /**
-     * Find and return the next Lesson to be presented to the user.
+     * Generate and return the next Session to be presented to the user.
      * If none exists, return null.
      *
-     * @returns {Lesson} Lesson object.
+     * @param {number} repsPerEntry: Number of repetitions for each entry as defined by user.
+     * @returns {Session} Session object.
      */
-    getNextLesson() {
+    prepareSession(repsPerEntry) {
         if (this.currentLessonIndex < this.lessons.length) {
-            return this.lessons[this.currentLessonIndex];
+            return new session_1.Session(this.lessons[this.currentLessonIndex], repsPerEntry);
         }
         else {
             return null;
@@ -214,15 +216,10 @@ class UserData {
     /**
      * Update data following the end of a user's training session.
      *
-     * @param {number} repsPerEntry: Number of reps per entry the user has defined.
+     * @param {Session} session: Session that was just completed.
      */
-    update(repsPerEntry) {
-        let lastLesson = this.lessons[this.currentLessonIndex];
-        let seenReps = 0;
-        lastLesson.packs.forEach((pack) => {
-            seenReps += pack.entries.length;
-        });
-        this.currentReps += (seenReps * repsPerEntry);
+    update(session) {
+        this.currentReps += session.reps.length;
         this.currentLessonIndex++;
         this.lastStudiedDate = new Date();
     }
