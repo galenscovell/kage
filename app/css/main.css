@@ -404,6 +404,11 @@ body {
     transition: 0.2s;
 }
 
+.training-button.active {
+    background-color: var(--about-theme);
+    color: var(--font-light);
+}
+
 #training-buttons img {
     height: 48px;
     width: auto;

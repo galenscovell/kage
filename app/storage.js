@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const class_transformer_1 = require("class-transformer");
 const electron_1 = require("electron");
 const fs = require("fs");
 const path = require("path");
 require("reflect-metadata");
+const class_transformer_1 = require("class-transformer");
 const userData_1 = require("./models/userData");
 const csv = require("neat-csv");
 class Storage {

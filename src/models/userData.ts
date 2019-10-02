@@ -59,7 +59,7 @@ export class UserData {
     }
 
     public getFormattedCompletionPctString(): string {
-        return `${this.currentLessonIndex / this.totalLessons}%`;
+        return `${(this.currentLessonIndex / this.totalLessons).toFixed(4)}%`;
     }
 
     public dayHasPassedSinceLastStudied(): boolean {
@@ -255,7 +255,7 @@ export class UserData {
      *
      * @param {Session} session: Session that was just completed.
      */
-    public update(session: Session): void {
+    public finishSession(session: Session): void {
         this.currentReps += session.reps.length;
         this.currentLessonIndex++;
         this.lastStudiedDate = new Date();

@@ -14,24 +14,23 @@ class Session {
         this.currentEntryIdx = 0;
         this.currentEntry = this.reps[this.currentEntryIdx];
     }
-    playNextRep(textElement, remainingElement) {
+    loadNext() {
         this.currentEntry = this.reps[this.currentEntryIdx];
-        this.setText(textElement);
-        this.setRemaining(remainingElement);
         this.currentSound = new howler_1.Howl({
-            src: [this.currentEntry.audioFilePath]
-        });
-        this.currentSound.once('load', () => {
-            this.currentSound.play();
-        });
-        this.currentSound.on('end', () => {
-            this.currentSound.stop();
-            this.currentSound.unload();
-            this.currentEntryIdx++;
+            src: [this.currentEntry.audioFilePath],
+            preload: true,
+            autoplay: false
         });
     }
-    static hasRemaining(session) {
-        return session.currentEntryIdx < session.reps.length;
+    playNext(textElement, remainingElement) {
+        this.setText(textElement);
+        this.setRemaining(remainingElement);
+        this.currentSound.play();
+        this.currentEntryIdx++;
+        return this.currentSound.duration() * 1000;
+    }
+    hasRemaining() {
+        return this.currentEntryIdx < this.reps.length;
     }
     setText(textElement) {
         textElement.text(this.currentEntry.text);

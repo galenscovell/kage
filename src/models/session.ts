@@ -27,28 +27,28 @@ export class Session {
         this.currentEntry = this.reps[this.currentEntryIdx];
     }
 
-    public playNextRep(textElement: JQuery<HTMLElement>, remainingElement: JQuery<HTMLElement>): void {
+    public loadNext(): void {
         this.currentEntry = this.reps[this.currentEntryIdx];
-        this.setText(textElement);
-        this.setRemaining(remainingElement);
 
         this.currentSound = new Howl({
-            src: [this.currentEntry.audioFilePath]
-        });
-
-        this.currentSound.once('load', () => {
-            this.currentSound.play();
-        });
-
-        this.currentSound.on('end', () => {
-            this.currentSound.stop();
-            this.currentSound.unload();
-            this.currentEntryIdx++;
+            src: [this.currentEntry.audioFilePath],
+            preload: true,
+            autoplay: false
         });
     }
 
-    public static hasRemaining(session: Session): boolean {
-        return session.currentEntryIdx < session.reps.length;
+    public playNext(textElement: JQuery<HTMLElement>, remainingElement: JQuery<HTMLElement>): number {
+        this.setText(textElement);
+        this.setRemaining(remainingElement);
+
+        this.currentSound.play();
+        this.currentEntryIdx++;
+
+        return this.currentSound.duration() * 1000;
+    }
+
+    public hasRemaining(): boolean {
+        return this.currentEntryIdx < this.reps.length;
     }
 
     public setText(textElement: JQuery<HTMLElement>): void {

@@ -47,7 +47,7 @@ class UserData {
         return `${this.getFormattedCompletionPctString()} complete`;
     }
     getFormattedCompletionPctString() {
-        return `${this.currentLessonIndex / this.totalLessons}%`;
+        return `${(this.currentLessonIndex / this.totalLessons).toFixed(4)}%`;
     }
     dayHasPassedSinceLastStudied() {
         if (this.lastStudiedDate === null || this.lastStudiedDate === undefined) {
@@ -218,7 +218,7 @@ class UserData {
      *
      * @param {Session} session: Session that was just completed.
      */
-    update(session) {
+    finishSession(session) {
         this.currentReps += session.reps.length;
         this.currentLessonIndex++;
         this.lastStudiedDate = new Date();

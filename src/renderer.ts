@@ -17,6 +17,8 @@ let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
 let $trainingText: JQuery<HTMLElement>;
 let $trainingRemaining: JQuery<HTMLElement>;
+let $trainingPlayButton: JQuery<HTMLElement>;
+let $trainingPauseButton: JQuery<HTMLElement>;
 
 let storage: Storage = new Storage(process.env.username || process.env.user);
 let userData: UserData = null;
@@ -59,10 +61,6 @@ function init(): void {
 
             loadDashboard();
             changePage(dashboardId);
-
-            if (!userData.dayHasPassedSinceLastStudied()) {
-                $(`#${trainingId}-${buttonId}`).addClass('disabled');
-            }
         });
     });
 }
@@ -85,6 +83,10 @@ function loadDashboard(): void {
         $(`#${dashboardId}-sources`).text('No source data');
         $(`#${dashboardId}-progress-value`).text('No completion data');
         $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', '0%');
+    }
+
+    if (!userData.dayHasPassedSinceLastStudied()) {
+        $(`#${trainingId}-${buttonId}`).addClass('disabled');
     }
 }
 
@@ -151,16 +153,49 @@ document.addEventListener('DOMContentLoaded', () => {
         $(`#${dashboardId}-regenerate-switch-input`).trigger('click');
     });
 
+    function backendLoop(startImmediately: boolean = false): void {
+        if (!training) {
+            return;
+        }
+
+        if (session.hasRemaining()) {
+            session.loadNext();
+
+            setTimeout(() => {
+                let waitTime: number = session.playNext($trainingText, $trainingRemaining);
+                setTimeout(backendLoop, waitTime);
+            }, startImmediately ? 1000 : 2000);
+        } else {
+            training = false;
+            $trainingPlayButton.removeClass('active');
+
+            userData.finishSession(session);
+            storage.save(userData);
+            loadDashboard();
+            changePage(dashboardId);
+
+            return;
+        }
+    }
+
     // Training page functions
     $trainingText = $(`#${trainingId}-text`);
     $trainingRemaining = $(`#${trainingId}-remaining`);
+    $trainingPlayButton = $(`#${trainingId}-play-${buttonId}`);
+    $trainingPauseButton = $(`#${trainingId}-pause-${buttonId}`);
 
-    $(`#${trainingId}-play-button`).on('click', async () => {
+    $trainingPlayButton.on('click', () => {
+        $trainingPauseButton.removeClass('active');
+        $trainingPlayButton.addClass('active');
+
         training = true;
-        session.playNextRep($trainingText, $trainingRemaining);
+        backendLoop(true);
     });
 
-    $(`#${trainingId}-pause-button`).on('click', () => {
+    $trainingPauseButton.on('click', () => {
+        $trainingPlayButton.removeClass('active');
+        $trainingPauseButton.addClass('active');
+
         training = false;
     });
 

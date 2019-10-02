@@ -1,10 +1,10 @@
-import {classToPlain, plainToClass} from 'class-transformer';
 import {app, remote} from 'electron';
 import * as fs from 'fs';
-import {Row} from 'neat-csv';
 import * as path from 'path';
 
 import 'reflect-metadata';
+import {Row} from 'neat-csv';
+import {classToPlain, plainToClass} from 'class-transformer';
 
 import {UserData} from './models/userData';
 import csv = require('neat-csv');
