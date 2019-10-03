@@ -461,6 +461,39 @@ body {
     border-radius: 3px;
 }
 
+#about-text {
+    margin-top: 4px;
+    font-size: 21px;
+    color: var(--font-dark);
+}
+
+#about-text span {
+    color: var(--quit-theme);
+    font-size: 32px;
+}
+
+#about-email, #about-github {
+    margin-top: 6px;
+    font-size: 18px;
+    color: var(--font-dark);
+}
+
+#about-email span {
+    color: var(--training-theme);
+    font-size: 32px;
+}
+
+#about-github span {
+    color: var(--general-theme);
+    font-size: 32px;
+}
+
+#about-credits {
+    margin-top: 30px;
+    font-size: 13px;
+    color: var(--font-lighter);
+}
+
 /* Quit */
 #quit-button:hover,
 #quit-button.active{

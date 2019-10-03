@@ -18,7 +18,10 @@ export class Session {
             let entriesInPack: Entry[] = pack.entries;
 
             for (let repetitions = 0; repetitions < repsPerEntry; repetitions++) {
-                sessionReps = sessionReps.concat(Session.shuffleEntries(entriesInPack));
+                // Randomize all entries after first
+                // This is to prevent there every being duplicate entries side by side
+                sessionReps.push(entriesInPack[0]);
+                sessionReps = sessionReps.concat(Session.shuffleEntries(entriesInPack.slice(1)));
             }
         });
 

@@ -15,6 +15,7 @@ let currentPageId: string = '';
 
 let $paneElement: JQuery<HTMLElement>;
 let $hiddenElement: JQuery<HTMLElement>;
+let $trainingButton: JQuery<HTMLElement>;
 let $trainingText: JQuery<HTMLElement>;
 let $trainingRemaining: JQuery<HTMLElement>;
 let $trainingPlayButton: JQuery<HTMLElement>;
@@ -47,8 +48,8 @@ function changePage(pageId: string): void {
 }
 
 function init(): void {
-    $('#splash-content').fadeIn(500, () => {
-        $('#splash-content').fadeOut(500, () => {
+    $('#splash-content').fadeIn(750, () => {
+        $('#splash-content').fadeOut(750, () => {
             let $header = $('#header');
             let $primaryContent = $(`#primary-${containerId}`);
 
@@ -60,6 +61,7 @@ function init(): void {
             $primaryContent.css('display', 'flex');
 
             loadDashboard();
+            loadTraining();
             changePage(dashboardId);
         });
     });
@@ -70,23 +72,27 @@ async function createData(entriesPerPack: number): Promise<void> {
 }
 
 function loadDashboard(): void {
+    $trainingButton.removeClass('disabled');
     userData = storage.load();
+
     if (userData !== null) {
         $(`#${dashboardId}-reps-value`).text(`${userData.currentReps} reps`);
         $(`#${dashboardId}-main-middle`).text(userData.getFormattedDateString());
         $(`#${dashboardId}-sources`).text(userData.getFormattedSourcesString());
         $(`#${dashboardId}-progress-value`).text(userData.getFormattedCompletionString());
         $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', userData.getFormattedCompletionPctString());
+
+        if (!userData.dayHasPassedSinceLastStudied()) {
+            $trainingButton.addClass('disabled');
+        }
     } else {
         $(`#${dashboardId}-reps-value`).text('No rep data');
         $(`#${dashboardId}-main-middle`).text('No date data');
         $(`#${dashboardId}-sources`).text('No source data');
         $(`#${dashboardId}-progress-value`).text('No completion data');
         $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', '0%');
-    }
 
-    if (!userData.dayHasPassedSinceLastStudied()) {
-        $(`#${trainingId}-${buttonId}`).addClass('disabled');
+        $trainingButton.addClass('disabled');
     }
 }
 
@@ -104,6 +110,7 @@ function loadTraining(): void {
 document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
+    $trainingButton = $(`#${trainingId}-${buttonId}`);
 
     // Nav bar buttons
     $(`#${dashboardId}-${buttonId}`).on('click', () => {
@@ -111,8 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         changePage(dashboardId);
     });
 
-    $(`#${trainingId}-${buttonId}`).on('click', () => {
-        loadTraining();
+    $trainingButton.on('click', () => {
         changePage(trainingId);
     });
 
@@ -147,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $(`#${dashboardId}-regenerate-${buttonId}`).on('click', async () => {
         await createData(5).then(() => {
             loadDashboard();
+            loadTraining();
         });
 
         // Reset the regen switch and button

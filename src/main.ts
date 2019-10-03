@@ -28,11 +28,11 @@ function createWindow(): void {
 }
 
 app.on('ready', () => {
-    ipcMain.on('close-main-window', function () {
+    ipcMain.on('close-main-window', () => {
         app.quit();
     });
 
-    ipcMain.on('minimize-main-window', function () {
+    ipcMain.on('minimize-main-window', () => {
         mainWindow.minimize();
     });
 

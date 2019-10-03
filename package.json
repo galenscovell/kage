@@ -2,7 +2,7 @@
   "name": "kage",
   "version": "1.0.0",
   "description": "Japanese language learning via the shadowing technique",
-  "main": "src/main.ts",
+  "main": "app/main.js",
   "scripts": {
     "build": "tsc",
     "dist": "build",
@@ -13,22 +13,12 @@
   "author": "galen.scovell@gmail.com",
   "license": "ISC",
   "devDependencies": {
-    "@types/howler": "^2.1.1",
-    "@types/jquery": "^3.3.31",
-    "class-transformer": "^0.2.3",
-    "electron": "^6.0.10",
-    "howler": "^2.1.2",
-    "jquery": "^3.4.1",
-    "neat-csv": "^5.1.0",
-    "reflect-metadata": "^0.1.13",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.3"
+    "electron": "^6.0.10"
   },
   "dependencies": {
     "@types/howler": "^2.1.1",
     "@types/jquery": "^3.3.31",
     "class-transformer": "^0.2.3",
-    "electron": "^6.0.10",
     "howler": "^2.1.2",
     "jquery": "^3.4.1",
     "neat-csv": "^5.1.0",

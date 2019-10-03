@@ -19,6 +19,7 @@ const containerId = 'container';
 let currentPageId = '';
 let $paneElement;
 let $hiddenElement;
+let $trainingButton;
 let $trainingText;
 let $trainingRemaining;
 let $trainingPlayButton;
@@ -43,8 +44,8 @@ function changePage(pageId) {
     }
 }
 function init() {
-    $('#splash-content').fadeIn(500, () => {
-        $('#splash-content').fadeOut(500, () => {
+    $('#splash-content').fadeIn(750, () => {
+        $('#splash-content').fadeOut(750, () => {
             let $header = $('#header');
             let $primaryContent = $(`#primary-${containerId}`);
             $(`#splash-${containerId}`).appendTo($hiddenElement);
@@ -53,6 +54,7 @@ function init() {
             $header.css('display', 'inline-block');
             $primaryContent.css('display', 'flex');
             loadDashboard();
+            loadTraining();
             changePage(dashboardId);
         });
     });
@@ -63,6 +65,7 @@ function createData(entriesPerPack) {
     });
 }
 function loadDashboard() {
+    $trainingButton.removeClass('disabled');
     userData = storage.load();
     if (userData !== null) {
         $(`#${dashboardId}-reps-value`).text(`${userData.currentReps} reps`);
@@ -70,6 +73,9 @@ function loadDashboard() {
         $(`#${dashboardId}-sources`).text(userData.getFormattedSourcesString());
         $(`#${dashboardId}-progress-value`).text(userData.getFormattedCompletionString());
         $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', userData.getFormattedCompletionPctString());
+        if (!userData.dayHasPassedSinceLastStudied()) {
+            $trainingButton.addClass('disabled');
+        }
     }
     else {
         $(`#${dashboardId}-reps-value`).text('No rep data');
@@ -77,9 +83,7 @@ function loadDashboard() {
         $(`#${dashboardId}-sources`).text('No source data');
         $(`#${dashboardId}-progress-value`).text('No completion data');
         $(`#${dashboardId}-progress-bar.bar.progress`).attr('width', '0%');
-    }
-    if (!userData.dayHasPassedSinceLastStudied()) {
-        $(`#${trainingId}-${buttonId}`).addClass('disabled');
+        $trainingButton.addClass('disabled');
     }
 }
 function loadTraining() {
@@ -96,13 +100,13 @@ function loadTraining() {
 document.addEventListener('DOMContentLoaded', () => {
     $paneElement = $(`#pane-${containerId}`);
     $hiddenElement = $(`#hidden-${containerId}`);
+    $trainingButton = $(`#${trainingId}-${buttonId}`);
     // Nav bar buttons
     $(`#${dashboardId}-${buttonId}`).on('click', () => {
         loadDashboard();
         changePage(dashboardId);
     });
-    $(`#${trainingId}-${buttonId}`).on('click', () => {
-        loadTraining();
+    $trainingButton.on('click', () => {
         changePage(trainingId);
     });
     $(`#${aboutId}-${buttonId}`).on('click', () => {
@@ -131,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $(`#${dashboardId}-regenerate-${buttonId}`).on('click', () => __awaiter(void 0, void 0, void 0, function* () {
         yield createData(5).then(() => {
             loadDashboard();
+            loadTraining();
         });
         // Reset the regen switch and button
         $(`#${dashboardId}-regenerate-switch-input`).trigger('click');

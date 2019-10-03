@@ -78,15 +78,6 @@ export class UserData {
     /**
      * Iterate across all files in data directory, creating individual entries, packs and lessons.
      *
-     * Notes:
-     *  Organize data files into sub-directories in the data directory. Each of these will be considered a separate 'source'.
-     *  Entries from each source will be assembled into packs round-robin style later.
-     *
-     *  In each sub-directory, there should be no other directories. They should have any number of mp3 files and exqctly one CSV file.
-     *  The CSV file format is simple, and I've included a sample at the root of the repo.
-     *  Each CSV row should be two columns: the name of the file (without extension), and the text to display for that entry.
-     *  The CSV is not required for ach sub-directory. If not found it will be ignored silently.
-     *
      * @param {number} entriesPerPack: Number of entries per each pack.
      */
     public async createAsync(entriesPerPack: number): Promise<void> {
