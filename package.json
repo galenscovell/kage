@@ -20,7 +20,7 @@
     "@types/jquery": "^3.3.31",
     "class-transformer": "^0.2.3",
     "howler": "^2.1.2",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "neat-csv": "^5.1.0",
     "reflect-metadata": "^0.1.13",
     "tslint": "^5.20.0",
